@@ -1,6 +1,7 @@
 """Command-line interface for ingestor."""
 
 import asyncio
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -12,7 +13,11 @@ from . import __version__
 from .types import IngestConfig
 
 
-console = Console()
+# Use ASCII-safe spinner on Windows to avoid encoding issues
+_IS_WINDOWS = sys.platform == "win32"
+_SPINNER = "line" if _IS_WINDOWS else "dots"  # "line" uses ASCII: -\|/
+
+console = Console(force_terminal=not _IS_WINDOWS)
 
 
 def create_config(ctx: click.Context) -> IngestConfig:
@@ -83,7 +88,7 @@ def ingest(ctx: click.Context, input: str, **kwargs):
             raise SystemExit(1)
 
         with Progress(
-            SpinnerColumn(),
+            SpinnerColumn(spinner_name=_SPINNER),
             TextColumn("[progress.description]{task.description}"),
             console=console,
         ) as progress:

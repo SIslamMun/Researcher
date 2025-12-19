@@ -79,7 +79,8 @@ dmypy.json
 Thumbs.db
 
 # Project specific
-output/
+/output/
+/outputs/
 *.log
 
 # Test fixtures (generated, not committed)
