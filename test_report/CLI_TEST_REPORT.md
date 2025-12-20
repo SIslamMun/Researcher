@@ -1,7 +1,7 @@
 # 📊 Ingestor CLI Comprehensive Test Report
 
-**Generated:** 2025-12-20 09:07:03
-**Test Duration:** 231.0 seconds
+**Generated:** 2025-12-20 09:41:46
+**Test Duration:** 214.7 seconds
 
 ---
 
@@ -69,7 +69,7 @@ All test files are **real documents** downloaded from public sources:
 | **Archive.org/LibriVox** | Audio | Gettysburg Address speech, JFK speech |
 | **Live Websites** | Web pages | Python docs, HTTPBin, Example.com |
 | **YouTube** | Video metadata | Rick Astley, Gangnam Style, first YouTube video |
-| **GitHub Repos** | Repository content | Flask, Requests, FastAPI |
+| **Git/GitHub** | Repository content | Hello-World, Requests README |
 
 ### Test Categories Explained
 
@@ -82,7 +82,8 @@ All test files are **real documents** downloaded from public sources:
 | **Archives** | ZIP files | `ingestor ingest archive.zip` |
 | **Web Pages** | HTTP(S) URLs | `ingestor ingest https://example.com` |
 | **YouTube** | Video URLs | `ingestor ingest https://youtube.com/watch?v=...` |
-| **GitHub** | Repo/file URLs | `ingestor ingest https://github.com/owner/repo` |
+| **Git/GitHub** | Repo/file URLs | `ingestor ingest https://github.com/owner/repo` |
+| **Git Clone** | Full repo clone | `ingestor clone https://github.com/owner/repo` |
 | **Audio** | MP3, WAV | `ingestor ingest audio.mp3` |
 
 ### Success Criteria
@@ -103,8 +104,8 @@ A test is considered **FAILED** when:
 
 | Metric | Value |
 |--------|-------|
-| **Total Tests** | 54 |
-| **Passed** | 54 ✅ |
+| **Total Tests** | 56 |
+| **Passed** | 56 ✅ |
 | **Failed** | 0 ❌ |
 | **Skipped** | 0 ⏭️ |
 | **Success Rate** | 100.0% |
@@ -115,15 +116,16 @@ A test is considered **FAILED** when:
 
 | Category | Total | Passed | Failed | Skipped | Avg Time (ms) | Pass Rate |
 |----------|-------|--------|--------|---------|---------------|-----------|
-| Text Files | 14 | 14 | 0 | 0 | 541 | 100% ✅ |
-| Data Files | 14 | 14 | 0 | 0 | 627 | 100% ✅ |
-| Documents | 5 | 5 | 0 | 0 | 3996 | 100% ✅ |
-| Images | 8 | 8 | 0 | 0 | 863 | 100% ✅ |
-| Archives | 2 | 2 | 0 | 0 | 7378 | 100% ✅ |
-| Web Pages | 3 | 3 | 0 | 0 | 3062 | 100% ✅ |
-| YouTube | 3 | 3 | 0 | 0 | 2626 | 100% ✅ |
-| GitHub | 3 | 3 | 0 | 0 | 3648 | 100% ✅ |
-| Audio | 2 | 2 | 0 | 0 | 72492 | 100% ✅ |
+| Text Files | 14 | 14 | 0 | 0 | 440 | 100% ✅ |
+| Data Files | 14 | 14 | 0 | 0 | 460 | 100% ✅ |
+| Documents | 5 | 5 | 0 | 0 | 3285 | 100% ✅ |
+| Images | 8 | 8 | 0 | 0 | 574 | 100% ✅ |
+| Archives | 2 | 2 | 0 | 0 | 4130 | 100% ✅ |
+| Web Pages | 3 | 3 | 0 | 0 | 3636 | 100% ✅ |
+| YouTube | 3 | 3 | 0 | 0 | 2508 | 100% ✅ |
+| Git/GitHub | 3 | 3 | 0 | 0 | 2902 | 100% ✅ |
+| Git Clone | 2 | 2 | 0 | 0 | 1629 | 100% ✅ |
+| Audio | 2 | 2 | 0 | 0 | 71184 | 100% ✅ |
 
 ### 📊 Pass Rate by Category (Visual)
 
@@ -135,7 +137,8 @@ Images     │██████████████████████
 Archives   │████████████████████████████████████████│ 100.0%
 Web Pages  │████████████████████████████████████████│ 100.0%
 YouTube    │████████████████████████████████████████│ 100.0%
-GitHub     │████████████████████████████████████████│ 100.0%
+Git/GitHub │████████████████████████████████████████│ 100.0%
+Git Clone  │████████████████████████████████████████│ 100.0%
 Audio      │████████████████████████████████████████│ 100.0%
 ```
 
@@ -145,26 +148,26 @@ Audio      │██████████████████████
 
 | File | Size | Time (ms) | Speed (KB/s) | Format |
 |------|------|-----------|--------------|--------|
-| US Cities (21MB JSON) | 20.9 MB | 769 | 27877 | JSON |
-| Great Expectations EPUB (14MB) | 13.7 MB | 16155 | 869 | EPUB |
-| Bootstrap 5.3.2 (8.2MB) | 8.2 MB | 10804 | 776 | ZIP |
-| Shakespeare Complete Works | 5.4 MB | 753 | 7309 | TXT |
-| War and Peace | 3.2 MB | 494 | 6641 | TXT |
-| Count of Monte Cristo | 2.7 MB | 500 | 5439 | TXT |
-| COVID-19 Global Data (1.8MB) | 1.7 MB | 871 | 2039 | CSV |
-| World Countries JSON | 1.3 MB | 494 | 2764 | JSON |
-| Gettysburg Address (LibriVox) | 1.3 MB | 107048 | 12 | MP3 |
-| Business Report DOCX | 1.3 MB | 644 | 1989 | DOCX |
-| Moby Dick | 1.2 MB | 665 | 1875 | TXT |
-| Flask 3.0.0 Project | 761.3 KB | 3951 | 193 | ZIP |
-| Pride and Prejudice | 754.3 KB | 514 | 1466 | TXT |
-| GitHub Trending Repos | 629.2 KB | 510 | 1235 | JSON |
-| World Population CSV | 526.0 KB | 988 | 533 | CSV |
-| Speech Sample WAV | 525.4 KB | 37936 | 14 | WAV |
-| Frankenstein EPUB | 464.9 KB | 1351 | 344 | EPUB |
-| Nature Hi-Res Photo (426KB) | 425.3 KB | 1967 | 216 | JPG |
-| IMDB Movies CSV | 302.5 KB | 724 | 418 | CSV |
-| Nobel Prizes JSON | 227.2 KB | 408 | 556 | JSON |
+| US Cities (21MB JSON) | 20.9 MB | 669 | 32063 | JSON |
+| Great Expectations EPUB (14MB) | 13.7 MB | 13623 | 1031 | EPUB |
+| Bootstrap 5.3.2 (8.2MB) | 8.2 MB | 6073 | 1381 | ZIP |
+| Shakespeare Complete Works | 5.4 MB | 728 | 7568 | TXT |
+| War and Peace | 3.2 MB | 706 | 4647 | TXT |
+| Count of Monte Cristo | 2.7 MB | 714 | 3813 | TXT |
+| COVID-19 Global Data (1.8MB) | 1.7 MB | 627 | 2837 | CSV |
+| World Countries JSON | 1.3 MB | 359 | 3800 | JSON |
+| Gettysburg Address (LibriVox) | 1.3 MB | 120165 | 11 | MP3 |
+| Business Report DOCX | 1.3 MB | 466 | 2751 | DOCX |
+| Moby Dick | 1.2 MB | 494 | 2523 | TXT |
+| Flask 3.0.0 Project | 761.3 KB | 2188 | 348 | ZIP |
+| Pride and Prejudice | 754.3 KB | 374 | 2015 | TXT |
+| GitHub Trending Repos | 629.2 KB | 339 | 1855 | JSON |
+| World Population CSV | 526.0 KB | 671 | 783 | CSV |
+| Speech Sample WAV | 525.4 KB | 22204 | 24 | WAV |
+| Frankenstein EPUB | 464.9 KB | 1001 | 464 | EPUB |
+| Nature Hi-Res Photo (426KB) | 425.3 KB | 1538 | 277 | JPG |
+| IMDB Movies CSV | 302.5 KB | 485 | 623 | CSV |
+| Nobel Prizes JSON | 227.2 KB | 319 | 713 | JSON |
 
 ## 📝 Detailed Test Results
 
@@ -172,100 +175,107 @@ Audio      │██████████████████████
 
 | Test Name | Status | Time (ms) | Input Size | Command |
 |-----------|--------|-----------|------------|---------|
-| Shakespeare Complete Works | ✅ PASS | 753 | 5.4 MB | `ingestor ingest "shakespeare_complete.txt"` |
-| War and Peace | ✅ PASS | 494 | 3.2 MB | `ingestor ingest "war_and_peace.txt"` |
-| Count of Monte Cristo | ✅ PASS | 500 | 2.7 MB | `ingestor ingest "monte_cristo.txt"` |
-| Moby Dick | ✅ PASS | 665 | 1.2 MB | `ingestor ingest "moby_dick.txt"` |
-| Pride and Prejudice | ✅ PASS | 514 | 754.3 KB | `ingestor ingest "pride_prejudice.txt"` |
-| Awesome Python README | ✅ PASS | 500 | 77.8 KB | `ingestor ingest "awesome_python.md"` |
-| Coding Interview University | ✅ PASS | 518 | 133.5 KB | `ingestor ingest "coding_interview.md"` |
-| FastAPI README | ✅ PASS | 523 | 26.0 KB | `ingestor ingest "fastapi_readme.md"` |
-| TensorFlow README | ✅ PASS | 392 | 11.6 KB | `ingestor ingest "tensorflow_readme.md"` |
-| React README | ✅ PASS | 618 | 5.2 KB | `ingestor ingest "react_readme.md"` |
-| Python Tutorial (RST) | ✅ PASS | 564 | 18.5 KB | `ingestor ingest "python_tutorial.rst"` |
-| Django Settings (Python) | ✅ PASS | 588 | 22.7 KB | `ingestor ingest "django_settings.py"` |
-| Requests API (Python) | ✅ PASS | 485 | 6.3 KB | `ingestor ingest "requests_api.py"` |
-| Lodash (JavaScript) | ✅ PASS | 458 | 71.3 KB | `ingestor ingest "lodash.js"` |
+| Shakespeare Complete Works | ✅ PASS | 728 | 5.4 MB | `ingestor ingest "shakespeare_complete.txt"` |
+| War and Peace | ✅ PASS | 706 | 3.2 MB | `ingestor ingest "war_and_peace.txt"` |
+| Count of Monte Cristo | ✅ PASS | 714 | 2.7 MB | `ingestor ingest "monte_cristo.txt"` |
+| Moby Dick | ✅ PASS | 494 | 1.2 MB | `ingestor ingest "moby_dick.txt"` |
+| Pride and Prejudice | ✅ PASS | 374 | 754.3 KB | `ingestor ingest "pride_prejudice.txt"` |
+| Awesome Python README | ✅ PASS | 336 | 77.8 KB | `ingestor ingest "awesome_python.md"` |
+| Coding Interview University | ✅ PASS | 371 | 133.5 KB | `ingestor ingest "coding_interview.md"` |
+| FastAPI README | ✅ PASS | 319 | 26.0 KB | `ingestor ingest "fastapi_readme.md"` |
+| TensorFlow README | ✅ PASS | 340 | 11.6 KB | `ingestor ingest "tensorflow_readme.md"` |
+| React README | ✅ PASS | 341 | 5.2 KB | `ingestor ingest "react_readme.md"` |
+| Python Tutorial (RST) | ✅ PASS | 365 | 18.5 KB | `ingestor ingest "python_tutorial.rst"` |
+| Django Settings (Python) | ✅ PASS | 388 | 22.7 KB | `ingestor ingest "django_settings.py"` |
+| Requests API (Python) | ✅ PASS | 331 | 6.3 KB | `ingestor ingest "requests_api.py"` |
+| Lodash (JavaScript) | ✅ PASS | 361 | 71.3 KB | `ingestor ingest "lodash.js"` |
 
 ### Data Files
 
 | Test Name | Status | Time (ms) | Input Size | Command |
 |-----------|--------|-----------|------------|---------|
-| US Cities (21MB JSON) | ✅ PASS | 769 | 20.9 MB | `ingestor ingest "us_cities.json"` |
-| World Countries JSON | ✅ PASS | 494 | 1.3 MB | `ingestor ingest "countries.json"` |
-| GitHub Trending Repos | ✅ PASS | 510 | 629.2 KB | `ingestor ingest "github_trending.json"` |
-| Nobel Prizes JSON | ✅ PASS | 408 | 227.2 KB | `ingestor ingest "nobel_prizes.json"` |
-| BBC News RSS Feed | ✅ PASS | 451 | 24.7 KB | `ingestor ingest "bbc_news.xml"` |
-| NY Times RSS Feed | ✅ PASS | 487 | 46.4 KB | `ingestor ingest "nytimes.xml"` |
-| Apache Commons POM | ✅ PASS | 388 | 34.2 KB | `ingestor ingest "apache_commons_pom.xml"` |
-| XKCD RSS Feed | ✅ PASS | 472 | 2.4 KB | `ingestor ingest "xkcd.xml"` |
-| COVID-19 Global Data (1.8MB) | ✅ PASS | 871 | 1.7 MB | `ingestor ingest "covid_global.csv"` |
-| World Population CSV | ✅ PASS | 988 | 526.0 KB | `ingestor ingest "world_population.csv"` |
-| IMDB Movies CSV | ✅ PASS | 724 | 302.5 KB | `ingestor ingest "movies.csv"` |
-| Titanic Dataset CSV | ✅ PASS | 813 | 58.9 KB | `ingestor ingest "titanic.csv"` |
-| Weather Data CSV | ✅ PASS | 787 | 66.3 KB | `ingestor ingest "weather.csv"` |
-| Iris Dataset CSV | ✅ PASS | 619 | 3.8 KB | `ingestor ingest "iris.csv"` |
+| US Cities (21MB JSON) | ✅ PASS | 669 | 20.9 MB | `ingestor ingest "us_cities.json"` |
+| World Countries JSON | ✅ PASS | 359 | 1.3 MB | `ingestor ingest "countries.json"` |
+| GitHub Trending Repos | ✅ PASS | 339 | 629.2 KB | `ingestor ingest "github_trending.json"` |
+| Nobel Prizes JSON | ✅ PASS | 319 | 227.2 KB | `ingestor ingest "nobel_prizes.json"` |
+| BBC News RSS Feed | ✅ PASS | 328 | 24.7 KB | `ingestor ingest "bbc_news.xml"` |
+| NY Times RSS Feed | ✅ PASS | 407 | 46.4 KB | `ingestor ingest "nytimes.xml"` |
+| Apache Commons POM | ✅ PASS | 375 | 34.2 KB | `ingestor ingest "apache_commons_pom.xml"` |
+| XKCD RSS Feed | ✅ PASS | 332 | 2.4 KB | `ingestor ingest "xkcd.xml"` |
+| COVID-19 Global Data (1.8MB) | ✅ PASS | 627 | 1.7 MB | `ingestor ingest "covid_global.csv"` |
+| World Population CSV | ✅ PASS | 671 | 526.0 KB | `ingestor ingest "world_population.csv"` |
+| IMDB Movies CSV | ✅ PASS | 485 | 302.5 KB | `ingestor ingest "movies.csv"` |
+| Titanic Dataset CSV | ✅ PASS | 480 | 58.9 KB | `ingestor ingest "titanic.csv"` |
+| Weather Data CSV | ✅ PASS | 526 | 66.3 KB | `ingestor ingest "weather.csv"` |
+| Iris Dataset CSV | ✅ PASS | 525 | 3.8 KB | `ingestor ingest "iris.csv"` |
 
 ### Documents
 
 | Test Name | Status | Time (ms) | Input Size | Command |
 |-----------|--------|-----------|------------|---------|
-| Business Report DOCX | ✅ PASS | 644 | 1.3 MB | `ingestor ingest "business_report.docx"` |
-| Financial Sample XLSX | ✅ PASS | 842 | 81.5 KB | `ingestor ingest "financial_sample.xlsx"` |
-| Great Expectations EPUB (14MB) | ✅ PASS | 16155 | 13.7 MB | `ingestor ingest "great_expectations.epub"` |
-| Frankenstein EPUB | ✅ PASS | 1351 | 464.9 KB | `ingestor ingest "frankenstein.epub"` |
-| Alice in Wonderland EPUB | ✅ PASS | 988 | 184.4 KB | `ingestor ingest "alice_wonderland.epub"` |
+| Business Report DOCX | ✅ PASS | 466 | 1.3 MB | `ingestor ingest "business_report.docx"` |
+| Financial Sample XLSX | ✅ PASS | 631 | 81.5 KB | `ingestor ingest "financial_sample.xlsx"` |
+| Great Expectations EPUB (14MB) | ✅ PASS | 13623 | 13.7 MB | `ingestor ingest "great_expectations.epub"` |
+| Frankenstein EPUB | ✅ PASS | 1001 | 464.9 KB | `ingestor ingest "frankenstein.epub"` |
+| Alice in Wonderland EPUB | ✅ PASS | 702 | 184.4 KB | `ingestor ingest "alice_wonderland.epub"` |
 
 ### Images
 
 | Test Name | Status | Time (ms) | Input Size | Command |
 |-----------|--------|-----------|------------|---------|
-| Nature Hi-Res Photo (426KB) | ✅ PASS | 1967 | 425.3 KB | `ingestor ingest "nature_hires.jpg"` |
-| NASA APOD Galaxy | ✅ PASS | 958 | 171.1 KB | `ingestor ingest "nasa_apod.jpg"` |
-| NASA Blue Marble | ✅ PASS | 806 | 167.8 KB | `ingestor ingest "earth_nasa.jpg"` |
-| Wikipedia Logo PNG | ✅ PASS | 583 | 161.6 KB | `ingestor ingest "wikipedia_logo.png"` |
-| Wikipedia Logo 2 PNG | ✅ PASS | 710 | 125.9 KB | `ingestor ingest "wikipedia_logo_png.png"` |
-| Python Logo PNG | ✅ PASS | 594 | 15.0 KB | `ingestor ingest "python_logo.png"` |
-| GitHub Logo PNG | ✅ PASS | 627 | 7.1 KB | `ingestor ingest "github_logo.png"` |
-| Chart Example PNG | ✅ PASS | 663 | 20.8 KB | `ingestor ingest "chart.png"` |
+| Nature Hi-Res Photo (426KB) | ✅ PASS | 1538 | 425.3 KB | `ingestor ingest "nature_hires.jpg"` |
+| NASA APOD Galaxy | ✅ PASS | 694 | 171.1 KB | `ingestor ingest "nasa_apod.jpg"` |
+| NASA Blue Marble | ✅ PASS | 483 | 167.8 KB | `ingestor ingest "earth_nasa.jpg"` |
+| Wikipedia Logo PNG | ✅ PASS | 361 | 161.6 KB | `ingestor ingest "wikipedia_logo.png"` |
+| Wikipedia Logo 2 PNG | ✅ PASS | 324 | 125.9 KB | `ingestor ingest "wikipedia_logo_png.png"` |
+| Python Logo PNG | ✅ PASS | 431 | 15.0 KB | `ingestor ingest "python_logo.png"` |
+| GitHub Logo PNG | ✅ PASS | 419 | 7.1 KB | `ingestor ingest "github_logo.png"` |
+| Chart Example PNG | ✅ PASS | 340 | 20.8 KB | `ingestor ingest "chart.png"` |
 
 ### Archives
 
 | Test Name | Status | Time (ms) | Input Size | Command |
 |-----------|--------|-----------|------------|---------|
-| Bootstrap 5.3.2 (8.2MB) | ✅ PASS | 10804 | 8.2 MB | `ingestor ingest "bootstrap.zip"` |
-| Flask 3.0.0 Project | ✅ PASS | 3951 | 761.3 KB | `ingestor ingest "sample_project.zip"` |
+| Bootstrap 5.3.2 (8.2MB) | ✅ PASS | 6073 | 8.2 MB | `ingestor ingest "bootstrap.zip"` |
+| Flask 3.0.0 Project | ✅ PASS | 2188 | 761.3 KB | `ingestor ingest "sample_project.zip"` |
 
 ### Web Pages
 
 | Test Name | Status | Time (ms) | Input Size | Command |
 |-----------|--------|-----------|------------|---------|
-| Python Tutorial Page | ✅ PASS | 3127 | 48 B | `ingestor ingest "https://docs.python.org/3/tutorial/appetite.html"` |
-| HTTPBin HTML Test | ✅ PASS | 3072 | 24 B | `ingestor ingest "https://httpbin.org/html"` |
-| Example.com | ✅ PASS | 2986 | 19 B | `ingestor ingest "https://example.com"` |
+| Python Tutorial Page | ✅ PASS | 3372 | 48 B | `ingestor ingest "https://docs.python.org/3/tutorial/appetite.html"` |
+| HTTPBin HTML Test | ✅ PASS | 4062 | 24 B | `ingestor ingest "https://httpbin.org/html"` |
+| Example.com | ✅ PASS | 3474 | 19 B | `ingestor ingest "https://example.com"` |
 
 ### YouTube
 
 | Test Name | Status | Time (ms) | Input Size | Command |
 |-----------|--------|-----------|------------|---------|
-| Rick Astley - Never Gonna Give You Up | ✅ PASS | 2699 | 43 B | `ingestor ingest "https://www.youtube.com/watch?v=dQw4w9WgXcQ"` |
-| Me at the zoo (First YouTube Video) | ✅ PASS | 2283 | 43 B | `ingestor ingest "https://www.youtube.com/watch?v=jNQXAC9IVRw"` |
-| PSY - Gangnam Style | ✅ PASS | 2897 | 43 B | `ingestor ingest "https://www.youtube.com/watch?v=9bZkp7q19f0"` |
+| Rick Astley - Never Gonna Give You Up | ✅ PASS | 2672 | 43 B | `ingestor ingest "https://www.youtube.com/watch?v=dQw4w9WgXcQ"` |
+| Me at the zoo (First YouTube Video) | ✅ PASS | 1971 | 43 B | `ingestor ingest "https://www.youtube.com/watch?v=jNQXAC9IVRw"` |
+| PSY - Gangnam Style | ✅ PASS | 2882 | 43 B | `ingestor ingest "https://www.youtube.com/watch?v=9bZkp7q19f0"` |
 
-### GitHub
+### Git/GitHub
 
 | Test Name | Status | Time (ms) | Input Size | Command |
 |-----------|--------|-----------|------------|---------|
-| Flask Repository | ✅ PASS | 9095 | 32 B | `ingestor ingest "https://github.com/pallets/flask"` |
-| Requests README | ✅ PASS | 818 | 51 B | `ingestor ingest "https://github.com/psf/requests/blob/main/README.m..."` |
-| FastAPI Docs Directory | ✅ PASS | 1029 | 51 B | `ingestor ingest "https://github.com/fastapi/fastapi/tree/master/doc..."` |
+| Hello-World Repository | ✅ PASS | 1855 | 38 B | `ingestor ingest "https://github.com/octocat/Hello-World"` |
+| Requests README | ✅ PASS | 829 | 51 B | `ingestor ingest "https://github.com/psf/requests/blob/main/README.m..."` |
+| Hello-World Directory | ✅ PASS | 6020 | 50 B | `ingestor ingest "https://github.com/octocat/Hello-World/tree/master"` |
+
+### Git Clone
+
+| Test Name | Status | Time (ms) | Input Size | Command |
+|-----------|--------|-----------|------------|---------|
+| Clone Hello-World | ✅ PASS | 1676 | 0 B | `ingestor ingest "https://github.com/octocat/Hello-World"` |
+| Clone with max-files | ✅ PASS | 1582 | 0 B | `ingestor ingest "https://github.com/octocat/Hello-World"` |
 
 ### Audio
 
 | Test Name | Status | Time (ms) | Input Size | Command |
 |-----------|--------|-----------|------------|---------|
-| Gettysburg Address (LibriVox) | ✅ PASS | 107048 | 1.3 MB | `ingestor ingest "librivox_sample.mp3"` |
-| Speech Sample WAV | ✅ PASS | 37936 | 525.4 KB | `ingestor ingest "jfk_speech.wav"` |
+| Gettysburg Address (LibriVox) | ✅ PASS | 120165 | 1.3 MB | `ingestor ingest "librivox_sample.mp3"` |
+| Speech Sample WAV | ✅ PASS | 22204 | 525.4 KB | `ingestor ingest "jfk_speech.wav"` |
 
 ## 📁 Format Support Matrix
 
@@ -333,9 +343,10 @@ All test files are real documents from public sources (not synthetic fixtures):
 | Archives | 2 | 8.9 MB | ✅ |
 | Web Pages | 3 | 91 B | ✅ |
 | YouTube | 3 | 129 B | ✅ |
-| GitHub | 3 | 134 B | ✅ |
+| Git/GitHub | 3 | 139 B | ✅ |
+| Git Clone | 2 | 0 B | ✅ |
 | Audio | 2 | 1.8 MB | ✅ |
-| **TOTAL** | **54** | **66.9 MB** | **✅** |
+| **TOTAL** | **56** | **66.9 MB** | **✅** |
 
 ## 🎯 Conclusion
 
@@ -344,9 +355,9 @@ All test files are real documents from public sources (not synthetic fixtures):
 The Ingestor CLI tool correctly handles all tested formats using real-world data.
 
 **Summary:**
-- ✅ 54/54 tests passed (100%)
-- ✅ All 9 categories working
-- ✅ Total processing time: 231.0 seconds
+- ✅ 56/56 tests passed (100%)
+- ✅ All 10 categories working
+- ✅ Total processing time: 214.7 seconds
 
 ---
-*Report generated by Ingestor CLI Test Suite on 2025-12-20 09:07:03*
+*Report generated by Ingestor CLI Test Suite on 2025-12-20 09:41:46*

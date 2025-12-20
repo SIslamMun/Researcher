@@ -103,6 +103,9 @@ class Router:
                 # Handle .url files specially
                 elif path.suffix.lower() == ".url":
                     sources.extend(self._parse_url_file(path))
+                # Handle .download_git files specially
+                elif path.suffix.lower() == ".download_git":
+                    sources.extend(self._parse_download_git_file(path))
 
         async for result in self.process_batch(sources, concurrency):
             yield result
@@ -118,6 +121,29 @@ class Router:
 
         Returns:
             List of URLs from the file
+        """
+        urls: List[str] = []
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
+                        urls.append(line)
+        except Exception:
+            pass
+        return urls
+
+    def _parse_download_git_file(self, path: Path) -> List[str]:
+        """Parse a .download_git file containing git repository URLs.
+
+        Each line in the file should be a git URL (HTTPS, SSH, or git://).
+        Empty lines and lines starting with # are ignored.
+
+        Args:
+            path: Path to the .download_git file
+
+        Returns:
+            List of git URLs from the file
         """
         urls: List[str] = []
         try:

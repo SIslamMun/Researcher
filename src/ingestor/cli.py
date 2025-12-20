@@ -220,6 +220,104 @@ def crawl(ctx: click.Context, url: str, **kwargs):
 
 
 @main.command()
+@click.argument("repo", type=str)
+@click.option("-o", "--output", type=click.Path(), default="./output", help="Output directory")
+@click.option("--shallow/--full", default=True, help="Use shallow clone (default: shallow)")
+@click.option("--depth", type=int, default=1, help="Clone depth for shallow clones")
+@click.option("--branch", type=str, help="Clone specific branch")
+@click.option("--tag", type=str, help="Clone specific tag")
+@click.option("--commit", type=str, help="Checkout specific commit after clone")
+@click.option("--token", type=str, envvar="GITHUB_TOKEN", help="Git token for private repos")
+@click.option("--submodules", is_flag=True, help="Include git submodules")
+@click.option("--max-files", type=int, default=500, help="Maximum files to process")
+@click.option("--max-file-size", type=int, default=500000, help="Maximum file size in bytes")
+@click.option("--include-binary", is_flag=True, help="Include binary file metadata")
+@click.option("--metadata", is_flag=True, help="Generate JSON metadata files")
+@click.option("-v", "--verbose", is_flag=True, help="Verbose output")
+@click.pass_context
+def clone(ctx: click.Context, repo: str, **kwargs):
+    """Clone and ingest a git repository.
+
+    REPO can be:
+    - HTTPS URL: https://github.com/user/repo
+    - SSH URL: git@github.com:user/repo.git
+    - Local path: /path/to/local/repo
+    - .download_git file: repos.download_git
+
+    Examples:
+        ingestor clone https://github.com/pallets/flask
+        ingestor clone git@github.com:user/private-repo.git --token $TOKEN
+        ingestor clone ./repos.download_git --max-files 200
+    """
+    config = create_config(ctx)
+
+    async def run():
+        from .extractors.git.git_extractor import GitExtractor, GitRepoConfig
+        from .output.writer import OutputWriter
+
+        # Create git-specific config
+        git_config = GitRepoConfig(
+            shallow=kwargs.get("shallow", True),
+            depth=kwargs.get("depth", 1),
+            branch=kwargs.get("branch"),
+            tag=kwargs.get("tag"),
+            commit=kwargs.get("commit"),
+            include_submodules=kwargs.get("submodules", False),
+            max_total_files=kwargs.get("max_files", 500),
+            max_file_size=kwargs.get("max_file_size", 500000),
+            include_binary_metadata=kwargs.get("include_binary", False),
+        )
+
+        # Create registry for nested extractions
+        registry = _create_registry()
+
+        extractor = GitExtractor(
+            config=git_config,
+            token=kwargs.get("token"),
+            registry=registry,
+        )
+        writer = OutputWriter(config)
+
+        console.print(f"Cloning repository: {repo}")
+        if git_config.branch:
+            console.print(f"  Branch: {git_config.branch}")
+        if git_config.tag:
+            console.print(f"  Tag: {git_config.tag}")
+        if git_config.shallow:
+            console.print(f"  Shallow clone: depth={git_config.depth}")
+
+        with Progress(
+            SpinnerColumn(spinner_name=_SPINNER),
+            TextColumn("[progress.description]{task.description}"),
+            console=console,
+        ) as progress:
+            task = progress.add_task(f"Cloning and processing...", total=None)
+
+            try:
+                result = await extractor.extract(repo)
+                progress.update(task, description="Writing output...")
+                output_path = await writer.write(result)
+                progress.update(task, completed=True, description="Done!")
+
+                console.print(f"\n[green]Success![/green] Output written to: {output_path}")
+                file_count = result.metadata.get("file_count", 0)
+                console.print(f"  Files processed: {file_count}")
+                if result.metadata.get("skipped_count"):
+                    console.print(f"  Files skipped: {result.metadata['skipped_count']}")
+                if result.has_images:
+                    console.print(f"  Images: {result.image_count}")
+
+            except Exception as e:
+                progress.stop()
+                console.print(f"[red]Error:[/red] {e}")
+                if config.verbose:
+                    console.print_exception()
+                raise SystemExit(1)
+
+    asyncio.run(run())
+
+
+@main.command()
 @click.argument("input", type=click.Path(exists=True))
 @click.option("--vlm-model", type=str, default="llava:7b", help="VLM model")
 @click.option("--ollama-host", type=str, default="http://localhost:11434", help="Ollama server")
@@ -341,8 +439,12 @@ def _create_registry():
         pass
 
     try:
-        from .extractors.github.github_extractor import GitHubExtractor
-        registry.register(GitHubExtractor())
+        from .extractors.git.git_extractor import GitExtractor
+        from .types import MediaType
+        git_extractor = GitExtractor(registry=registry)
+        registry.register(git_extractor)
+        # Also register for GITHUB type since unified extractor handles both
+        registry._extractors[MediaType.GITHUB] = git_extractor
     except ImportError:
         pass
 

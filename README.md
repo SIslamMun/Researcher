@@ -22,7 +22,7 @@ Uses Google Magika file detection.
 | Audio | .wav ✅  .mp3 🟡  .flac 🟡 | Whisper transcription |
 | Web | URLs ✅ | Deep crawling (Crawl4AI) |
 | YouTube | Videos ✅  Playlists ✅ | Transcripts |
-| GitHub | Repos ✅  Files ✅  Dirs ✅ | README, code, metadata |
+| Git/GitHub | URLs ✅ | Clone, API, SSH, submodules |
 | Archives | .zip ✅ | Recursive extraction |
 
 ✅ = tested with real files
@@ -54,7 +54,7 @@ uv sync --extra docx        # Word documents
 uv sync --extra xlsx        # Excel files
 uv sync --extra web         # Web crawling
 uv sync --extra youtube     # YouTube transcripts
-uv sync --extra github      # GitHub repositories
+uv sync --extra git         # Git/GitHub repositories
 uv sync --extra audio       # Audio transcription
 ```
 
@@ -100,7 +100,11 @@ ingestor ingest "https://youtube.com/watch?v=..."
 ingestor ingest "https://youtube.com/playlist?list=..." --playlist
 ```
 
-### GitHub
+### Git Repositories
+
+The unified Git extractor supports both GitHub API access (for specific files/directories) and full git clone (for any server).
+
+#### Quick Access via GitHub API
 ```bash
 # Extract entire repository (README, metadata, key files)
 ingestor ingest "https://github.com/owner/repo" -o ./output
@@ -110,6 +114,59 @@ ingestor ingest "https://github.com/owner/repo/blob/main/src/file.py" -o ./outpu
 
 # Extract a directory
 ingestor ingest "https://github.com/owner/repo/tree/main/src" -o ./output
+```
+
+#### Full Repository Clone
+```bash
+# Clone and process entire repository (shallow clone by default)
+ingestor clone https://github.com/owner/repo -o ./output
+
+# Clone specific branch
+ingestor clone https://github.com/owner/repo --branch develop
+
+# Clone specific tag
+ingestor clone https://github.com/owner/repo --tag v1.0.0
+
+# Full clone (all history)
+ingestor clone https://github.com/owner/repo --full
+
+# Clone private repository (SSH) - works with any git server
+ingestor clone git@github.com:owner/private-repo.git
+ingestor clone git@gitlab.com:owner/repo.git
+ingestor clone git@bitbucket.org:owner/repo.git
+
+# Clone with token (for HTTPS private repos)
+ingestor clone https://github.com/owner/private-repo --token $GITHUB_TOKEN
+
+# Clone with submodules
+ingestor clone https://github.com/owner/repo --submodules
+
+# Limit files processed
+ingestor clone https://github.com/owner/repo --max-files 100 --max-file-size 100000
+```
+
+#### Bulk Repository Cloning (.download_git files)
+
+Create a `.download_git` file with repository URLs (one per line):
+
+```
+# repos.download_git
+https://github.com/pallets/flask
+https://github.com/psf/requests
+git@github.com:user/private-repo.git
+```
+
+Then process all repositories:
+```bash
+ingestor clone repos.download_git -o ./output
+```
+
+#### Clone Output Structure
+```
+output/
+├── repo_name/
+│   ├── repo_name.md       # Combined markdown with all files
+│   └── img/               # Extracted images (if any)
 ```
 
 ## Output Structure
@@ -303,7 +360,7 @@ Input (file/URL)
 | Audio (.mp3, .wav) | openai-whisper | [GitHub](https://github.com/openai/whisper) |
 | Web (URLs) | crawl4ai | [GitHub](https://github.com/unclecode/crawl4ai) |
 | YouTube | yt-dlp + youtube-transcript-api | [yt-dlp](https://github.com/yt-dlp/yt-dlp), [transcript-api](https://github.com/jdepoix/youtube-transcript-api) |
-| GitHub | httpx (built-in) | Uses GitHub REST API |
+| Git/GitHub | httpx + subprocess | GitHub API + git clone |
 | Archives (.zip) | zipfile (built-in) | - |
 
 ### How Detection Works

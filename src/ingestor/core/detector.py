@@ -102,6 +102,13 @@ class FileDetector:
         r"^https?://(?:www\.)?github\.com/[^/]+/[^/]+(?:/.*)?$",
     ]
 
+    # Git repository URL patterns (for full clone)
+    GIT_PATTERNS = [
+        r"^git@[^:]+:[^/]+/[^/]+(?:\.git)?$",  # SSH: git@github.com:user/repo.git
+        r"^git://[^/]+/[^/]+/[^/]+(?:\.git)?$",  # Git protocol
+        r"^ssh://git@[^/]+/[^/]+/[^/]+(?:\.git)?$",  # SSH with ssh://
+    ]
+
     WEB_PATTERN = r"^https?://"
 
     def __init__(self):
@@ -133,12 +140,19 @@ class FileDetector:
         if self._is_github_url(source_str):
             return MediaType.GITHUB
 
+        if self._is_git_url(source_str):
+            return MediaType.GIT
+
         if self._is_web_url(source_str):
             return MediaType.WEB
 
         # Check for .url files (contain URLs to crawl)
         if source_str.lower().endswith(".url"):
             return MediaType.WEB
+
+        # Check for .download_git files (contain git repo URLs)
+        if source_str.lower().endswith(".download_git"):
+            return MediaType.GIT
 
         # For files, use Magika
         path = Path(source)
@@ -292,6 +306,10 @@ class FileDetector:
     def _is_github_url(self, url: str) -> bool:
         """Check if URL is a GitHub repository."""
         return any(re.match(pattern, url) for pattern in self.GITHUB_PATTERNS)
+
+    def _is_git_url(self, url: str) -> bool:
+        """Check if URL is a git repository URL (SSH, git://, etc.)."""
+        return any(re.match(pattern, url) for pattern in self.GIT_PATTERNS)
 
     def _is_web_url(self, url: str) -> bool:
         """Check if string is a web URL."""

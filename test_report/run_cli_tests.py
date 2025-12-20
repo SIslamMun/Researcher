@@ -339,21 +339,98 @@ class CLITestRunner:
         
         return suite
     
-    def test_github(self) -> TestSuite:
-        """Test GitHub extraction."""
-        suite = TestSuite(category="GitHub")
+    def test_git(self) -> TestSuite:
+        """Test Git/GitHub extraction."""
+        suite = TestSuite(category="Git/GitHub")
         
-        github_tests = [
-            ("https://github.com/pallets/flask", "Flask Repository", "GITHUB"),
-            ("https://github.com/psf/requests/blob/main/README.md", "Requests README", "GITHUB"),
-            ("https://github.com/fastapi/fastapi/tree/master/docs", "FastAPI Docs Directory", "GITHUB"),
+        # GitHub API tests (ingest command)
+        github_api_tests = [
+            ("https://github.com/octocat/Hello-World", "Hello-World Repository", "GIT"),
+            ("https://github.com/psf/requests/blob/main/README.md", "Requests README", "GIT"),
+            ("https://github.com/octocat/Hello-World/tree/master", "Hello-World Directory", "GIT"),
         ]
         
-        for url, name, fmt in github_tests:
-            result = self.run_single_test(url, name, fmt, "github")
+        for url, name, fmt in github_api_tests:
+            result = self.run_single_test(url, name, fmt, "git")
             suite.results.append(result)
         
         return suite
+    
+    def test_git_clone(self) -> TestSuite:
+        """Test Git clone command."""
+        suite = TestSuite(category="Git Clone")
+        
+        clone_tests = [
+            ("https://github.com/octocat/Hello-World", "Clone Hello-World", []),
+            ("https://github.com/octocat/Hello-World", "Clone with max-files", ["--max-files", "5"]),
+        ]
+        
+        for url, name, extra_args in clone_tests:
+            result = self.run_clone_test(url, name, extra_args)
+            suite.results.append(result)
+        
+        return suite
+    
+    def run_clone_test(self, url: str, name: str, extra_args: List[str] = None) -> TestResult:
+        """Run a git clone test."""
+        cmd = ["uv", "run", "ingestor", "clone", url, "-o", str(self.output_dir)]
+        if extra_args:
+            cmd.extend(extra_args)
+        
+        start_time = time.perf_counter()
+        
+        try:
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=300,
+                cwd=str(Path(__file__).parent.parent)
+            )
+            duration_ms = (time.perf_counter() - start_time) * 1000
+            
+            success = result.returncode == 0
+            output = result.stdout + result.stderr
+            
+            return TestResult(
+                name=name,
+                source=url,
+                command=" ".join(cmd),
+                format="GIT_CLONE",
+                status="pass" if success else "fail",
+                duration_ms=duration_ms,
+                input_size_bytes=0,
+                output_size_chars=len(output),
+                error_message=None if success else output,
+                metadata={"extra_args": extra_args or []}
+            )
+            
+        except subprocess.TimeoutExpired:
+            return TestResult(
+                name=name,
+                source=url,
+                command=" ".join(cmd),
+                format="GIT_CLONE",
+                status="fail",
+                duration_ms=300000,
+                input_size_bytes=0,
+                output_size_chars=0,
+                error_message="Command timed out after 5 minutes",
+                metadata={"extra_args": extra_args or []}
+            )
+        except Exception as e:
+            return TestResult(
+                name=name,
+                source=url,
+                command=" ".join(cmd),
+                format="GIT_CLONE",
+                status="fail",
+                duration_ms=0,
+                input_size_bytes=0,
+                output_size_chars=0,
+                error_message=str(e),
+                metadata={"extra_args": extra_args or []}
+            )
     
     def test_audio(self) -> TestSuite:
         """Test audio extraction."""
@@ -411,8 +488,11 @@ class CLITestRunner:
         print("\n▶️ Testing YouTube...")
         self.test_suites["youtube"] = self.test_youtube()
         
-        print("\n🐙 Testing GitHub...")
-        self.test_suites["github"] = self.test_github()
+        print("\n🐙 Testing Git/GitHub API...")
+        self.test_suites["git"] = self.test_git()
+        
+        print("\n📦 Testing Git Clone...")
+        self.test_suites["git_clone"] = self.test_git_clone()
         
         print("\n🎵 Testing Audio...")
         self.test_suites["audio"] = self.test_audio()
@@ -523,7 +603,7 @@ class CLITestRunner:
             "| **Archive.org/LibriVox** | Audio | Gettysburg Address speech, JFK speech |",
             "| **Live Websites** | Web pages | Python docs, HTTPBin, Example.com |",
             "| **YouTube** | Video metadata | Rick Astley, Gangnam Style, first YouTube video |",
-            "| **GitHub Repos** | Repository content | Flask, Requests, FastAPI |",
+            "| **Git/GitHub** | Repository content | Hello-World, Requests README |",
             "",
             "### Test Categories Explained",
             "",
@@ -536,7 +616,8 @@ class CLITestRunner:
             "| **Archives** | ZIP files | `ingestor ingest archive.zip` |",
             "| **Web Pages** | HTTP(S) URLs | `ingestor ingest https://example.com` |",
             "| **YouTube** | Video URLs | `ingestor ingest https://youtube.com/watch?v=...` |",
-            "| **GitHub** | Repo/file URLs | `ingestor ingest https://github.com/owner/repo` |",
+            "| **Git/GitHub** | Repo/file URLs | `ingestor ingest https://github.com/owner/repo` |",
+            "| **Git Clone** | Full repo clone | `ingestor clone https://github.com/owner/repo` |",
             "| **Audio** | MP3, WAV | `ingestor ingest audio.mp3` |",
             "",
             "### Success Criteria",

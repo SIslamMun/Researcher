@@ -24,6 +24,7 @@ class MediaType(Enum):
     WEB = "web"
     YOUTUBE = "youtube"
     GITHUB = "github"
+    GIT = "git"  # Full git repository cloning
 
     # Audio
     AUDIO = "audio"

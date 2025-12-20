@@ -39,7 +39,8 @@ from ingestor.extractors import (
     ImageExtractor,
     AudioExtractor,
 )
-from ingestor.extractors.github import GitHubExtractor
+from ingestor.extractors.git import GitExtractor
+from ingestor.types import MediaType
 
 
 @dataclass
@@ -109,7 +110,11 @@ class ComprehensiveTestRunner:
         registry.register(XlsxExtractor())
         registry.register(ZipExtractor())
         registry.register(ImageExtractor())
-        registry.register(GitHubExtractor())
+        
+        # Register GitExtractor for both GIT and GITHUB media types
+        git_extractor = GitExtractor()
+        registry.register(git_extractor)
+        registry._extractors[MediaType.GITHUB] = git_extractor
         
         try:
             registry.register(WebExtractor())
@@ -381,19 +386,19 @@ class ComprehensiveTestRunner:
         
         return suite
     
-    async def test_github_extraction(self) -> TestSuite:
-        """Test GitHub repository extraction."""
-        suite = TestSuite(category="GitHub")
+    async def test_git_extraction(self) -> TestSuite:
+        """Test Git/GitHub repository extraction."""
+        suite = TestSuite(category="Git/GitHub")
         
-        github_urls = [
-            ("https://github.com/pallets/flask", "Flask Repository", "GITHUB"),
-            ("https://github.com/psf/requests/blob/main/README.md", "Requests README", "GITHUB"),
-            ("https://github.com/fastapi/fastapi/tree/master/docs", "FastAPI Docs Directory", "GITHUB"),
+        git_urls = [
+            ("https://github.com/octocat/Hello-World", "Hello-World Repository", "GIT"),
+            ("https://github.com/psf/requests/blob/main/README.md", "Requests README", "GIT"),
+            ("https://github.com/octocat/Hello-World/tree/master", "Hello-World Directory", "GIT"),
         ]
         
-        print("\n🐙 Testing GitHub Extraction...")
-        for url, name, fmt in github_urls:
-            result = await self.run_single_test(url, name, fmt, "github")
+        print("\n🐙 Testing Git/GitHub Extraction...")
+        for url, name, fmt in git_urls:
+            result = await self.run_single_test(url, name, fmt, "git")
             suite.results.append(result)
         
         return suite
@@ -439,7 +444,7 @@ class ComprehensiveTestRunner:
         self.test_suites["archives"] = await self.test_archive_files()
         self.test_suites["web"] = await self.test_web_extraction()
         self.test_suites["youtube"] = await self.test_youtube_extraction()
-        self.test_suites["github"] = await self.test_github_extraction()
+        self.test_suites["git"] = await self.test_git_extraction()
         self.test_suites["audio"] = await self.test_audio_files()
         
         self.end_time = datetime.now()
@@ -613,7 +618,7 @@ class ComprehensiveTestRunner:
             "ZIP": ("ZIP", "✅ Supported", "Recursive extraction"),
             "Web Pages": ("HTTP(S)", "✅ Supported", "Requires Playwright"),
             "YouTube": ("youtube.com", "✅ Supported", "Transcripts + metadata"),
-            "GitHub": ("github.com", "✅ Supported", "Repos, files, directories"),
+            "Git/GitHub": ("github.com, SSH", "✅ Supported", "Repos, files, clone"),
             "Audio": ("MP3, WAV", "✅ Supported", "Whisper transcription"),
             "PDF": ("PDF", "⚠️ Placeholder", "Requires Docling integration"),
         }
