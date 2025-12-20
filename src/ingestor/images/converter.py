@@ -44,6 +44,10 @@ class ImageConverter:
         if source_format == "jpg":
             source_format = "jpeg"
 
+        # Skip SVG files - they can't be converted by PIL
+        if source_format == "svg":
+            return image
+
         # Skip if already in target format
         if source_format == self.target_format:
             return image

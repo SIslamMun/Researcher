@@ -58,6 +58,37 @@ class FileDetector:
         "markdown": MediaType.TXT,
         "rst": MediaType.TXT,
         "html": MediaType.TXT,  # Local HTML files treated as text
+        # Code files (treat as text for extraction)
+        "python": MediaType.TXT,
+        "javascript": MediaType.TXT,
+        "typescript": MediaType.TXT,
+        "java": MediaType.TXT,
+        "c": MediaType.TXT,
+        "cpp": MediaType.TXT,
+        "csharp": MediaType.TXT,
+        "go": MediaType.TXT,
+        "rust": MediaType.TXT,
+        "ruby": MediaType.TXT,
+        "php": MediaType.TXT,
+        "shell": MediaType.TXT,
+        "bash": MediaType.TXT,
+        "powershell": MediaType.TXT,
+        "sql": MediaType.TXT,
+        "yaml": MediaType.TXT,
+        "toml": MediaType.TXT,
+        "ini": MediaType.TXT,
+        "css": MediaType.TXT,
+        "scss": MediaType.TXT,
+        "less": MediaType.TXT,
+        # Common misdetections that should be treated as text
+        "autohotkey": MediaType.TXT,  # Large text files sometimes misdetected
+        "perl": MediaType.TXT,
+        "lua": MediaType.TXT,
+        "r": MediaType.TXT,
+        "scala": MediaType.TXT,
+        "kotlin": MediaType.TXT,
+        "swift": MediaType.TXT,
+        "dart": MediaType.TXT,
     }
 
     # URL patterns for web content
@@ -131,11 +162,17 @@ class FileDetector:
         return self.MAGIKA_TO_MEDIA_TYPE.get(label, MediaType.UNKNOWN)
 
     def _detect_file(self, path: Path) -> MediaType:
-        """Detect file type using Magika."""
+        """Detect file type using Magika with extension-based fallback."""
         try:
             result = self.magika.identify_path(path)
             label = result.output.label.lower()
-            return self.MAGIKA_TO_MEDIA_TYPE.get(label, MediaType.UNKNOWN)
+            detected = self.MAGIKA_TO_MEDIA_TYPE.get(label, MediaType.UNKNOWN)
+            
+            # If Magika returns UNKNOWN, try extension-based detection
+            if detected == MediaType.UNKNOWN:
+                return self._detect_by_extension(path)
+            
+            return detected
         except Exception:
             # Fallback to extension if Magika fails
             return self._detect_by_extension(path)
@@ -144,6 +181,7 @@ class FileDetector:
         """Fallback detection by file extension."""
         ext = path.suffix.lower().lstrip(".")
         extension_map = {
+            # Documents
             "pdf": MediaType.PDF,
             "docx": MediaType.DOCX,
             "doc": MediaType.DOCX,
@@ -152,26 +190,98 @@ class FileDetector:
             "xlsx": MediaType.XLSX,
             "xls": MediaType.XLS,
             "csv": MediaType.CSV,
+            "tsv": MediaType.CSV,
             "epub": MediaType.EPUB,
+            # Audio
             "mp3": MediaType.AUDIO,
             "wav": MediaType.AUDIO,
             "flac": MediaType.AUDIO,
             "m4a": MediaType.AUDIO,
+            "ogg": MediaType.AUDIO,
+            "aac": MediaType.AUDIO,
+            # Data
             "json": MediaType.JSON,
             "xml": MediaType.XML,
+            # Archives
             "zip": MediaType.ZIP,
             "tar": MediaType.ZIP,
             "gz": MediaType.ZIP,
+            "tgz": MediaType.ZIP,
+            "rar": MediaType.ZIP,
+            "7z": MediaType.ZIP,
+            # Images
             "png": MediaType.IMAGE,
             "jpg": MediaType.IMAGE,
             "jpeg": MediaType.IMAGE,
             "gif": MediaType.IMAGE,
             "webp": MediaType.IMAGE,
+            "bmp": MediaType.IMAGE,
+            "tiff": MediaType.IMAGE,
+            "svg": MediaType.IMAGE,
+            "ico": MediaType.IMAGE,
+            # Text/Plain text
             "txt": MediaType.TXT,
+            "text": MediaType.TXT,
             "md": MediaType.TXT,
+            "markdown": MediaType.TXT,
             "rst": MediaType.TXT,
             "html": MediaType.TXT,
             "htm": MediaType.TXT,
+            "log": MediaType.TXT,
+            "cfg": MediaType.TXT,
+            "conf": MediaType.TXT,
+            "ini": MediaType.TXT,
+            # Code files (treated as text)
+            "py": MediaType.TXT,
+            "pyw": MediaType.TXT,
+            "pyi": MediaType.TXT,
+            "js": MediaType.TXT,
+            "mjs": MediaType.TXT,
+            "cjs": MediaType.TXT,
+            "ts": MediaType.TXT,
+            "tsx": MediaType.TXT,
+            "jsx": MediaType.TXT,
+            "java": MediaType.TXT,
+            "c": MediaType.TXT,
+            "h": MediaType.TXT,
+            "cpp": MediaType.TXT,
+            "hpp": MediaType.TXT,
+            "cc": MediaType.TXT,
+            "cxx": MediaType.TXT,
+            "cs": MediaType.TXT,
+            "go": MediaType.TXT,
+            "rs": MediaType.TXT,
+            "rb": MediaType.TXT,
+            "php": MediaType.TXT,
+            "sh": MediaType.TXT,
+            "bash": MediaType.TXT,
+            "zsh": MediaType.TXT,
+            "ps1": MediaType.TXT,
+            "sql": MediaType.TXT,
+            "yaml": MediaType.TXT,
+            "yml": MediaType.TXT,
+            "toml": MediaType.TXT,
+            "css": MediaType.TXT,
+            "scss": MediaType.TXT,
+            "less": MediaType.TXT,
+            "sass": MediaType.TXT,
+            "r": MediaType.TXT,
+            "scala": MediaType.TXT,
+            "kt": MediaType.TXT,
+            "kts": MediaType.TXT,
+            "swift": MediaType.TXT,
+            "dart": MediaType.TXT,
+            "lua": MediaType.TXT,
+            "pl": MediaType.TXT,
+            "pm": MediaType.TXT,
+            "ex": MediaType.TXT,
+            "exs": MediaType.TXT,
+            "erl": MediaType.TXT,
+            "hrl": MediaType.TXT,
+            "clj": MediaType.TXT,
+            "cljs": MediaType.TXT,
+            "vue": MediaType.TXT,
+            "svelte": MediaType.TXT,
         }
         return extension_map.get(ext, MediaType.UNKNOWN)
 

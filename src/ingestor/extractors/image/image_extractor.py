@@ -33,10 +33,23 @@ class ImageExtractor(BaseExtractor):
         Returns:
             Extraction result with metadata and image
         """
+        path = Path(source)
+        
+        # Check if it's an SVG file (by content, not just extension)
+        try:
+            content = path.read_bytes()
+            if content.strip().startswith(b'<?xml') or content.strip().startswith(b'<svg'):
+                return self._extract_svg(path, content)
+        except Exception:
+            pass
+        
+        # Handle raster images with PIL
+        return await self._extract_raster_image(path)
+    
+    async def _extract_raster_image(self, path: Path) -> ExtractionResult:
+        """Extract metadata from a raster image file (PNG, JPG, etc.)."""
         from PIL import Image
         from PIL.ExifTags import TAGS
-
-        path = Path(source)
 
         # Read image
         with Image.open(path) as img:
@@ -79,7 +92,72 @@ class ImageExtractor(BaseExtractor):
                 "height": height,
                 "format": format_name,
                 "mode": mode,
-                "exif": exif_data,
+                **exif_data,
+            },
+        )
+    
+    def _extract_svg(self, path: Path, content: bytes) -> ExtractionResult:
+        """Extract metadata from an SVG file."""
+        import re
+        
+        # Try to decode the content
+        try:
+            svg_text = content.decode('utf-8')
+        except UnicodeDecodeError:
+            svg_text = content.decode('latin-1')
+        
+        # Try to extract dimensions from SVG
+        width = height = "unknown"
+        
+        # Look for width/height attributes
+        width_match = re.search(r'width=["\']?(\d+(?:\.\d+)?)', svg_text)
+        height_match = re.search(r'height=["\']?(\d+(?:\.\d+)?)', svg_text)
+        
+        if width_match:
+            width = width_match.group(1)
+        if height_match:
+            height = height_match.group(1)
+        
+        # Look for viewBox
+        viewbox_match = re.search(r'viewBox=["\']?[\d.\s]+\s+([\d.]+)\s+([\d.]+)', svg_text)
+        if viewbox_match and width == "unknown":
+            width = viewbox_match.group(1)
+            height = viewbox_match.group(2)
+        
+        # Build markdown
+        markdown = f"""# Image: {path.name}
+
+| Property | Value |
+|----------|-------|
+| **File** | {path.name} |
+| **Format** | SVG (Scalable Vector Graphics) |
+| **Width** | {width} |
+| **Height** | {height} |
+| **Size** | {len(content):,} bytes |
+
+> **Note:** SVG is a vector image format stored as XML text.
+"""
+        
+        # Create extracted image
+        images = [
+            ExtractedImage(
+                filename=path.name,
+                data=content,
+                format="svg",
+            )
+        ]
+        
+        return ExtractionResult(
+            markdown=markdown,
+            title=path.stem,
+            source=str(path),
+            media_type=MediaType.IMAGE,
+            images=images,
+            metadata={
+                "width": width,
+                "height": height,
+                "format": "SVG",
+                "size_bytes": len(content),
             },
         )
 

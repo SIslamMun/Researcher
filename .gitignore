@@ -97,3 +97,9 @@ tests/fixtures/images/*.jpg
 # uv
 .python-version
 uv.lock
+
+# Test report data (large test samples not committed)
+test_report/test_samples/
+test_report/test_results.json
+test_report/cli_test_results.json
+test_report/output/
