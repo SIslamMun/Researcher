@@ -2,7 +2,7 @@
 
 Convert a variety of data formats to markdown for RAG or LLM training.
 
-Extracts multi-modality format, targetting text, images (also extracted, as much as possible, from provided files) and audio. 
+Extracts multi-modality data, targeting text, images (also extracted, as much as possible, from provided files) and audio. 
 
 Uses Google Magika file detection.
 
@@ -10,6 +10,7 @@ Uses Google Magika file detection.
 
 | Format | Extensions | Notes |
 |--------|-----------|-------|
+| PDF | .pdf ✅ | Docling ML extraction, academic papers, tables |
 | Text | .txt ✅  .md ✅  .rst ✅ | With charset detection |
 | Word | .docx ✅ | Extracts images |
 | PowerPoint | .pptx ✅ | Slides + images |
@@ -50,6 +51,7 @@ uv sync
 
 **Specific formats**:
 ```bash
+uv sync --extra pdf         # PDF documents (Docling ML)
 uv sync --extra docx        # Word documents
 uv sync --extra xlsx        # Excel files
 uv sync --extra web         # Web crawling
@@ -86,6 +88,56 @@ ingestor ingest "https://example.com" -o ./crawled
 ```bash
 ingestor batch ./documents -o ./output
 ingestor batch ./docs --recursive --concurrency 10
+```
+
+### PDF Documents
+
+The PDF extractor uses **Docling** (ML-based) for high-quality extraction with PyMuPDF fallback for OCR.
+
+```bash
+# Basic PDF extraction
+ingestor ingest paper.pdf -o ./output
+
+# Batch process PDFs
+ingestor batch ./papers -o ./output
+```
+
+#### Features
+
+- **Structure Preservation**: Multi-column layouts, headings, paragraphs
+- **Academic Papers**: Linked citations, reference anchors, section detection
+- **Figure Extraction**: Automatic embedding at captions, logo filtering
+- **Table Extraction**: Tables converted to markdown
+- **LaTeX Equations**: Extracted as `$$...$$` display math blocks via Docling's formula enrichment
+- **OCR Fallback**: Scanned PDFs via PyMuPDF
+
+#### Output Structure
+```
+output/paper/
+├── paper.md              # Processed markdown
+└── img/
+    ├── figure1.png       # Extracted figures
+    ├── figure2.png
+    └── ...
+```
+
+#### Post-Processing (Academic Papers)
+
+The extractor automatically applies:
+- **Citation linking**: `[7]` → `[[7]](#ref-7)` with anchor links
+- **Citation range expansion**: `[3]-[5]` → `[[3]](#ref-3), [[4]](#ref-4), [[5]](#ref-5)`
+- **Section detection**: Numbered sections (1., 1.1, 1.1.1) become proper headers
+- **Figure embedding**: Figures inserted above their captions
+- **LaTeX equations**: Extracted as `$$...$$` display math blocks
+- **Ligature normalization**: ﬁ→fi, ﬂ→fl, etc.
+
+#### Requirements
+
+```bash
+# Install PDF support
+uv sync --extra pdf
+
+# Docling downloads ~500MB of ML models on first use
 ```
 
 ### Web Crawling
@@ -388,6 +440,7 @@ Input (file/URL)
 
 | Format | Library | Links |
 |--------|---------|-------|
+| PDF (.pdf) | docling + pymupdf | [docling](https://github.com/DS4SD/docling), [PyMuPDF](https://github.com/pymupdf/PyMuPDF) |
 | Text (.txt, .md, .rst) | charset_normalizer | [charset-normalizer](https://pypi.org/project/charset-normalizer/) |
 | Word (.docx) | docx2python + mammoth | [docx2python](https://github.com/ShayHill/docx2python), [mammoth](https://github.com/mwilliamson/python-mammoth) |
 | PowerPoint (.pptx) | python-pptx | [GitHub](https://github.com/scanny/python-pptx) |

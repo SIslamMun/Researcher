@@ -46,6 +46,7 @@ dependencies = [
 docx = ["docx2python>=2.0.0", "mammoth>=1.6.0"]  # python-docx only for fixtures (in dev)
 pptx = ["python-pptx>=0.6.21"]
 epub = ["ebooklib>=0.18"]
+pdf = ["docling>=2.0.0", "pymupdf>=1.26.6"]  # Docling for ML extraction, PyMuPDF for fallback
 
 # Spreadsheets
 xlsx = ["pandas>=2.0.0", "openpyxl>=3.1.0"]
@@ -69,7 +70,7 @@ agent = ["anthropic>=0.39.0"]  # For Claude API integration
 
 # Bundles
 all-formats = [
-    "ingestor[docx,pptx,epub,xlsx,xls,web,youtube,git,audio,xml,csv]"
+    "ingestor[docx,pptx,epub,xlsx,xls,web,youtube,git,audio,xml,csv,pdf]"
 ]
 all = [
     "ingestor[all-formats,vlm,agent]"
