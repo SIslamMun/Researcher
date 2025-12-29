@@ -15,9 +15,6 @@ def cli():
     Conduct automated multi-step research tasks and produce detailed reports.
 
     Requires GOOGLE_API_KEY environment variable.
-
-    For parsing references from research output, use: parser parse-refs
-    For downloading papers, use: parser download or parser batch
     """
     pass
 
@@ -52,8 +49,6 @@ def research(query: str, output: str, output_format: str | None,
         researcher research "Compare transformer architectures" --format "Include comparison table"
 
         researcher research "Survey of LLM agents" -o ./research --verbose
-
-    After research, use 'parser parse-refs' to extract paper references.
     """
     from .deep_research import DeepResearcher, ResearchConfig
 
@@ -122,8 +117,9 @@ def research(query: str, output: str, output_format: str | None,
 
             # Hint about next steps
             click.echo()
-            click.echo(click.style("Next steps:", dim=True))
-            click.echo(click.style(f"  parser parse-refs {output_path / 'research' / 'research_report.md'}", dim=True))
+            click.echo(click.style("Output files:", dim=True))
+            click.echo(click.style(f"  Report: {output_path / 'research' / 'research_report.md'}", dim=True))
+            click.echo(click.style(f"  Metadata: {output_path / 'research' / 'research_metadata.json'}", dim=True))
         else:
             click.echo()
             click.echo(click.style(f"Research failed: {result.error}", fg="red"), err=True)
