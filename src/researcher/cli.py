@@ -49,31 +49,38 @@ def cli():
 @click.argument("query", type=str)
 @click.option("-o", "--output", type=click.Path(), default="./output", help="Output directory")
 @click.option("--format", "output_format", type=str, default=None, help="Output format instructions")
+@click.option("--mode", type=click.Choice(["undirected", "directed", "no-research"], case_sensitive=False),
+              default="undirected", help="Research mode (default: undirected)")
+@click.option("--artifacts", "-a", multiple=True, help="Supporting materials (URLs, files, or text)")
 @click.option("--no-stream", is_flag=True, help="Disable streaming (use polling)")
 @click.option("--max-wait", type=int, default=3600, help="Max wait time in seconds (default: 3600)")
 @click.option("-v", "--verbose", is_flag=True, help="Verbose output with thinking steps")
 @click.option("--config", "config_path", type=click.Path(exists=True), default=None, help="Path to config file")
 @click.option("--api-key", type=str, default=None, help="Google API key (overrides config/env)")
 def research(query: str, output: str, output_format: str | None,
-             no_stream: bool, max_wait: int, verbose: bool,
+             mode: str, artifacts: tuple[str, ...], no_stream: bool, max_wait: int, verbose: bool,
              config_path: str | None, api_key: str | None):
     """Conduct deep research on a topic using Gemini Deep Research Agent.
 
     Searches multiple sources, synthesizes findings, and produces a comprehensive
     report with structured citations (arXiv IDs, DOIs, GitHub URLs).
 
+    Research Modes:
+      undirected: Web-first discovery (default)
+      directed: Prioritize user materials, web fills gaps
+      no-research: Analyze only provided materials, no web search
+
     Output files (saved to <output>/research/):
       - research_report.md: Main report with citations
       - research_metadata.json: Query, timing, interaction info
       - thinking_steps.md: Agent reasoning (if --verbose)
 
-    Customize citation format in configs/prompts.yaml
-
     Examples:
-      researcher research "Latest advances in quantum computing"
-      researcher research "Compare transformers" --format "Include tables" -v
+      researcher research "Quantum computing" --mode undirected
+      researcher research "Compare transformers" --mode directed -a paper.pdf -a https://arxiv.org/...
+      researcher research "Analyze findings" --mode no-research -a paper1.pdf -a paper2.pdf
     """
-    from .deep_research import DeepResearcher, ResearchConfig
+    from .deep_research import DeepResearcher, ResearchConfig, ResearchMode
 
     # Load config file
     config_data = load_config(Path(config_path) if config_path else None)
@@ -91,12 +98,25 @@ def research(query: str, output: str, output_format: str | None,
         output_path = Path(output)
         output_path.mkdir(parents=True, exist_ok=True)
 
+        # Parse research mode
+        research_mode = ResearchMode(mode.lower().replace("-", "_"))
+
+        # Validate artifacts for mode
+        artifacts_list = list(artifacts) if artifacts else None
+        if research_mode in (ResearchMode.DIRECTED, ResearchMode.NO_RESEARCH) and not artifacts_list:
+            click.echo(click.style(
+                f"Warning: {mode} mode works best with artifacts. Use -a/--artifacts to provide materials.",
+                fg="yellow"
+            ), err=True)
+
         # Configure research
         config = ResearchConfig(
             output_format=output_format,
             max_wait_time=max_wait,
             enable_streaming=not no_stream,
             enable_thinking=verbose,
+            mode=research_mode,
+            artifacts=artifacts_list,
         )
 
         researcher = DeepResearcher(api_key=resolved_api_key, config=config)
@@ -124,6 +144,9 @@ def research(query: str, output: str, output_format: str | None,
         query_display = query if len(query) <= 80 else f"{query[:77]}..."
         click.echo(f"🔍 Researching: {query_display}")
         click.echo(f"📁 Output: {output_path / 'research'}")
+        click.echo(f"🎯 Mode: {mode}")
+        if artifacts_list:
+            click.echo(f"📎 Artifacts: {len(artifacts_list)} items")
         click.echo()
 
         try:

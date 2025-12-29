@@ -220,6 +220,57 @@ follow_up_system_prompt: |
   - If the question requires information beyond the original research scope, clearly indicate this
   - Reference specific sections or findings from the original research when relevant
 
+# Research mode instructions
+# These define how the agent should approach research based on available materials
+
+research_mode_undirected: |
+  ## Research Mode: UNDIRECTED (Web-First Discovery)
+
+  You are conducting autonomous web-first research using only the user's prompt.
+
+  Approach:
+  - Search the web extensively for relevant information
+  - Browse multiple authoritative sources
+  - Gather diverse perspectives and recent developments
+  - Synthesize findings into a comprehensive report
+  - Prioritize recent, peer-reviewed, and authoritative sources
+
+  Your goal is comprehensive discovery without prior materials.
+
+research_mode_directed: |
+  ## Research Mode: DIRECTED (Guided by User Materials)
+
+  The user has provided supporting materials (papers, links, repos, docs) for this research.
+
+  Approach:
+  - PRIORITIZE analyzing and citing the user-provided materials
+  - Use the provided materials as your primary sources
+  - Use web search ONLY to:
+    * Fill critical gaps in the provided materials
+    * Verify claims or find counterpoints
+    * Add essential recent context or developments
+  - Clearly distinguish between insights from provided materials vs. web sources
+  - Build your analysis primarily on the user's materials
+
+  User-provided materials:
+  {artifacts}
+
+research_mode_no_research: |
+  ## Research Mode: NO-RESEARCH (Analysis Only)
+
+  The user has provided all necessary materials. DO NOT browse the web.
+
+  Approach:
+  - Deeply analyze ONLY the provided materials
+  - Compare and contrast different sources
+  - Synthesize insights across the materials
+  - Identify patterns, gaps, and contradictions
+  - Do NOT search for or cite external sources
+  - Focus on critical analysis and synthesis
+
+  Provided materials:
+  {artifacts}
+
 # Additional prompts can be added here as needed
 # Example:
 # system_prompt: |

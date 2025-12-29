@@ -24,6 +24,18 @@ class ResearchStatus(Enum):
     CANCELLED = "cancelled"
 
 
+class ResearchMode(Enum):
+    """Research mode determining source prioritization.
+
+    UNDIRECTED: Web-first discovery using only the user's prompt
+    DIRECTED: User provides materials, web search fills gaps
+    NO_RESEARCH: Only analyze provided materials, no web search
+    """
+    UNDIRECTED = "undirected"
+    DIRECTED = "directed"
+    NO_RESEARCH = "no_research"
+
+
 def _load_prompts_config(config_path: Path | None = None) -> dict:
     """Load prompts configuration from YAML file.
 
@@ -86,6 +98,8 @@ class ResearchConfig:
         enable_thinking: Whether to show agent's thinking process
         file_search_stores: Optional list of file search store names for RAG
         include_identifiers: Whether to request arXiv IDs/DOIs in output
+        mode: Research mode (undirected, directed, no_research)
+        artifacts: Supporting materials for directed/no-research modes
     """
     output_format: str | None = None
     max_wait_time: int = 3600  # 60 minutes max
@@ -94,6 +108,8 @@ class ResearchConfig:
     enable_thinking: bool = True
     file_search_stores: list[str] | None = None
     include_identifiers: bool = True  # Request arXiv IDs, DOIs, etc.
+    mode: ResearchMode = ResearchMode.UNDIRECTED
+    artifacts: list[str] | None = None  # URLs, file paths, or text snippets
 
 
 @dataclass
@@ -212,15 +228,30 @@ class DeepResearcher:
         return self._client
 
     def _build_prompt(self, query: str) -> str:
-        """Build the research prompt with optional formatting instructions.
+        """Build the research prompt with mode instructions and formatting.
 
         Args:
             query: The research query
 
         Returns:
-            Complete prompt with formatting instructions
+            Complete prompt with mode instructions and formatting
         """
         prompt = query
+
+        # Add research mode instructions
+        prompts_config = _load_prompts_config()
+        mode_key = f"research_mode_{self.config.mode.value}"
+        mode_prompt = prompts_config.get(mode_key, "")
+
+        if mode_prompt:
+            # Format artifacts if provided
+            if self.config.artifacts:
+                artifacts_text = "\n".join(f"- {artifact}" for artifact in self.config.artifacts)
+                mode_prompt = mode_prompt.format(artifacts=artifacts_text)
+            else:
+                mode_prompt = mode_prompt.replace("{artifacts}", "(No artifacts provided)")
+
+            prompt += f"\n\n{mode_prompt}"
 
         # Add custom output format if provided
         if self.config.output_format:

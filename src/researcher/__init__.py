@@ -15,6 +15,7 @@ Example:
 from .deep_research import (
     DeepResearcher,
     ResearchConfig,
+    ResearchMode,
     ResearchResult,
     ResearchStatus,
     deep_research,
@@ -23,6 +24,7 @@ from .deep_research import (
 __all__ = [
     "DeepResearcher",
     "ResearchConfig",
+    "ResearchMode",
     "ResearchResult",
     "ResearchStatus",
     "deep_research",

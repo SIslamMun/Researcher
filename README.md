@@ -6,6 +6,7 @@ Conduct autonomous multi-step research tasks and generate comprehensive, cited r
 
 ## Features
 
+- **Three Research Modes**: Undirected, Directed, or No-Research based on your materials
 - **Autonomous Research**: Multi-step research executed autonomously by Gemini
 - **Structured Citations**: Automatic extraction of arXiv IDs, DOIs, GitHub URLs
 - **Streaming Progress**: Real-time updates with agent thinking steps
@@ -42,6 +43,47 @@ uv sync                    # Production
 uv sync --extra dev        # Development
 ```
 
+## Research Modes
+
+Choose how the agent conducts research based on available materials:
+
+### 🌐 UNDIRECTED (Default)
+**Web-first discovery** - Agent searches the web autonomously
+
+```bash
+researcher research "Latest AI trends" --mode undirected
+```
+
+Use when: You want comprehensive web-based research on a topic
+
+### 📚 DIRECTED
+**User materials + web** - Prioritize your materials, use web to fill gaps
+
+```bash
+researcher research "Compare these approaches" \
+  --mode directed \
+  -a paper1.pdf \
+  -a https://arxiv.org/abs/2301.12345 \
+  -a "Key findings from experiment X"
+```
+
+Use when: You have materials but need additional context or verification
+
+### 🔬 NO-RESEARCH
+**Analysis only** - Deeply analyze provided materials, no web search
+
+```bash
+researcher research "Synthesize findings across papers" \
+  --mode no-research \
+  -a paper1.pdf \
+  -a paper2.pdf \
+  -a paper3.pdf
+```
+
+Use when: You have all needed materials and want focused analysis
+
+---
+
 ## Configuration
 
 ### API Key
@@ -58,6 +100,9 @@ Set your Google API key (priority order):
 **Available prompts:**
 - `default_output_format` - Citation format and reference structure for main research
 - `follow_up_system_prompt` - System instructions for follow-up questions
+- `research_mode_undirected` - Web-first discovery instructions
+- `research_mode_directed` - Guided research with user materials prioritization
+- `research_mode_no_research` - Analysis-only mode instructions
 
 **To customize:**
 ```bash
@@ -79,16 +124,25 @@ Benefits:
 ### CLI
 
 ```bash
-# Basic research
+# Basic research (undirected mode)
 researcher research "Your research query"
 
-# With options
-researcher research "Compare transformer architectures" \
-  -o ./my_research \
-  -v \
-  --format "Include comparison tables"
+# Directed mode with materials
+researcher research "Compare these architectures" \
+  --mode directed \
+  -a paper1.pdf \
+  -a https://arxiv.org/abs/... \
+  -o ./my_research
+
+# No-research mode (analysis only)
+researcher research "Synthesize findings" \
+  --mode no-research \
+  -a doc1.pdf -a doc2.pdf -a doc3.pdf \
+  -v
 
 # Common options:
+#   --mode MODE          Research mode: undirected, directed, no-research
+#   -a, --artifacts      Supporting materials (can use multiple times)
 #   -o, --output DIR     Output directory (default: ./output)
 #   -v, --verbose        Show thinking steps and preview
 #   --format TEXT        Custom format instructions
@@ -104,21 +158,34 @@ researcher research --help
 ### Programmatic
 
 ```python
-from researcher.deep_research import DeepResearcher, ResearchConfig
+from researcher import DeepResearcher, ResearchConfig, ResearchMode
 
-# Basic usage
+# Basic usage (undirected mode)
 researcher = DeepResearcher()
 result = await researcher.research("What is quantum computing?")
 print(result.report)
 
-# With config
+# Directed mode with artifacts
 config = ResearchConfig(
-    output_format="Include comparison tables",
-    enable_streaming=True,
-    enable_thinking=True
+    mode=ResearchMode.DIRECTED,
+    artifacts=[
+        "paper1.pdf",
+        "https://arxiv.org/abs/2301.12345",
+        "Key findings from experiment X"
+    ],
+    enable_streaming=True
 )
 researcher = DeepResearcher(config=config)
-result = await researcher.research("AI safety research")
+result = await researcher.research("Compare these transformer architectures")
+
+# No-research mode (analysis only)
+config = ResearchConfig(
+    mode=ResearchMode.NO_RESEARCH,
+    artifacts=["paper1.pdf", "paper2.pdf", "paper3.pdf"],
+    output_format="Include comparison tables"
+)
+researcher = DeepResearcher(config=config)
+result = await researcher.research("Synthesize findings across these papers")
 
 # Save results
 result.save("./output/research")
@@ -133,10 +200,16 @@ answer = await researcher.follow_up(
 ### Convenience Function
 
 ```python
-from researcher.deep_research import deep_research
+from researcher import deep_research, ResearchMode
 
+# Quick undirected research
+result = await deep_research("Latest AI trends")
+
+# With custom config
 result = await deep_research(
     "Latest AI trends",
+    mode=ResearchMode.DIRECTED,
+    artifacts=["report.pdf", "https://arxiv.org/abs/..."],
     output_format="Executive summary with bullet points"
 )
 ```
