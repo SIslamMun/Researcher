@@ -258,15 +258,26 @@ research_mode_directed: |
 research_mode_no_research: |
   ## Research Mode: NO-RESEARCH (Analysis Only)
 
-  The user has provided all necessary materials. DO NOT browse the web.
+  The user has provided all necessary materials. DO NOT perform web searches for additional sources.
 
   Approach:
-  - Deeply analyze ONLY the provided materials
-  - Compare and contrast different sources
+  - You MAY fetch and read the provided URLs (arXiv papers, GitHub repos, documentation links, etc.)
+  - Deeply analyze ONLY the content from the provided materials
+  - Compare and contrast the different provided sources
   - Synthesize insights across the materials
   - Identify patterns, gaps, and contradictions
-  - Do NOT search for or cite external sources
-  - Focus on critical analysis and synthesis
+  - Do NOT search for or cite external sources beyond what was provided
+  - Focus on critical analysis and synthesis of the given materials
+
+  What you CAN do:
+  - Fetch content from provided URLs (arXiv, GitHub, docs, etc.)
+  - Read and analyze the fetched content
+  - Cross-reference between provided materials
+
+  What you CANNOT do:
+  - Perform web searches for additional sources
+  - Cite sources not provided by the user
+  - Browse beyond the provided URLs
 
   Provided materials:
   {artifacts}
