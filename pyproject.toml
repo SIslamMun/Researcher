@@ -22,6 +22,9 @@ dependencies = [
     # CLI & Output
     "click>=8.1.0",
     "rich>=13.0.0",
+    # Config
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
     # Google Gemini API
     "google-genai>=1.0.0",
 ]

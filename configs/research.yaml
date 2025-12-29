@@ -1,6 +1,10 @@
 # Researcher Configuration
 # Configuration for Gemini Deep Research Agent
 
+# API Configuration
+# Set your Google API key here (or use GOOGLE_API_KEY environment variable)
+api_key: ""  # Your Google API key
+
 # Research settings
 research:
   max_wait_time: 3600        # Maximum time to wait for research completion (seconds)

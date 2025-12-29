@@ -59,14 +59,33 @@ uv sync --extra dev
 
 ## Configuration
 
-### Environment Variables
+### API Key Setup
 
+You can set your Google API key in four ways (in order of priority):
+
+**1. CLI option**:
 ```bash
-# Required: Google API key for Gemini access
+researcher research "query" --api-key "your-google-api-key"
+```
+
+**2. Environment variable**:
+```bash
 export GOOGLE_API_KEY="your-google-api-key"
 ```
 
-You can get a Google API key from the [Google AI Studio](https://aistudio.google.com/).
+**3. `.env` file** (auto-loaded):
+```bash
+# .env
+GOOGLE_API_KEY=your-google-api-key
+```
+
+**4. Config file**:
+```yaml
+# configs/research.yaml
+api_key: "your-google-api-key"
+```
+
+You can get a Google API key from the [Google AI Studio](https://aistudio.google.com()).
 
 ## Usage
 
