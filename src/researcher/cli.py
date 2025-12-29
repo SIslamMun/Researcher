@@ -13,14 +13,7 @@ load_dotenv()
 
 
 def load_config(config_path: Path | None = None) -> dict:
-    """Load configuration from YAML file.
-    
-    Args:
-        config_path: Path to config file. If None, searches default locations.
-        
-    Returns:
-        Configuration dictionary
-    """
+    """Load research config from YAML file (searches default locations if not specified)."""
     import yaml
     
     # Default search paths
@@ -44,14 +37,10 @@ def load_config(config_path: Path | None = None) -> dict:
 @click.group()
 @click.version_option(version="0.1.0", prog_name="researcher")
 def cli():
-    """Researcher CLI - Deep research using Gemini Deep Research Agent.
+    """Researcher CLI - AI-powered deep research using Gemini.
 
-    Conduct automated multi-step research tasks and produce detailed reports.
-
-    API key can be set via:
-    - Config file: configs/research.yaml (api_key field)
-    - Environment variable: GOOGLE_API_KEY
-    - CLI option: --api-key
+    API key: Set via --api-key, GOOGLE_API_KEY env var, or configs/research.yaml
+    Prompts: Customize in configs/prompts.yaml (citation format, follow-up instructions)
     """
     pass
 
@@ -68,27 +57,21 @@ def cli():
 def research(query: str, output: str, output_format: str | None,
              no_stream: bool, max_wait: int, verbose: bool,
              config_path: str | None, api_key: str | None):
-    """Conduct deep research on a topic.
+    """Conduct deep research on a topic using Gemini Deep Research Agent.
 
-    QUERY is the research topic or question.
+    Searches multiple sources, synthesizes findings, and produces a comprehensive
+    report with structured citations (arXiv IDs, DOIs, GitHub URLs).
 
-    The research agent will:
-    1. Search multiple sources for information
-    2. Synthesize findings into a comprehensive report
-    3. Include citations with arXiv IDs and DOIs when available
+    Output files (saved to <output>/research/):
+      - research_report.md: Main report with citations
+      - research_metadata.json: Query, timing, interaction info
+      - thinking_steps.md: Agent reasoning (if --verbose)
 
-    Output:
-    - research_report.md: Main research report
-    - research_metadata.json: Query, citations, timing info
-    - thinking_steps.md: Agent reasoning (if --verbose)
+    Customize citation format in configs/prompts.yaml
 
     Examples:
-
-        researcher research "What are the latest advances in quantum computing?"
-
-        researcher research "Compare transformer architectures" --format "Include comparison table"
-
-        researcher research "Survey of LLM agents" -o ./research --verbose
+      researcher research "Latest advances in quantum computing"
+      researcher research "Compare transformers" --format "Include tables" -v
     """
     from .deep_research import DeepResearcher, ResearchConfig
 
@@ -99,10 +82,9 @@ def research(query: str, output: str, output_format: str | None,
     resolved_api_key = api_key or os.environ.get("GOOGLE_API_KEY") or config_data.get("api_key")
     
     if not resolved_api_key:
-        click.echo(click.style("Error: No API key found. Set it via:", fg="red"), err=True)
-        click.echo("  - Config file: configs/research.yaml (api_key field)", err=True)
-        click.echo("  - Environment: export GOOGLE_API_KEY=your-key", err=True)
-        click.echo("  - CLI option: --api-key your-key", err=True)
+        click.echo(click.style("Error: No API key found", fg="red"), err=True)
+        click.echo("Set via: --api-key, GOOGLE_API_KEY env, or configs/research.yaml", err=True)
+        click.echo("Get key from: https://aistudio.google.com/", err=True)
         sys.exit(1)
 
     async def run():
@@ -138,10 +120,10 @@ def research(query: str, output: str, output_format: str | None,
                 else:
                     click.echo(text, nl=False)
 
-        click.echo(f"Researching: {query[:80]}...")
-        click.echo(f"Output: {output_path}")
-        if stream_file:
-            click.echo(f"Stream log: {stream_file}")
+        # Show query (truncated if too long)
+        query_display = query if len(query) <= 80 else f"{query[:77]}..."
+        click.echo(f"🔍 Researching: {query_display}")
+        click.echo(f"📁 Output: {output_path / 'research'}")
         click.echo()
 
         try:
@@ -155,27 +137,19 @@ def research(query: str, output: str, output_format: str | None,
             result.save(output_path / "research")
 
             click.echo()
-            click.echo(click.style("Research completed!", fg="green"))
+            click.echo(click.style("✓ Research completed!", fg="green", bold=True))
             click.echo(f"Duration: {result.duration_seconds:.1f}s")
-            click.echo(f"Report saved to: {output_path / 'research' / 'research_report.md'}")
-            if stream_file:
-                click.echo(f"Stream log saved to: {stream_file}")
+            click.echo(f"Report: {output_path / 'research' / 'research_report.md'}")
 
-            # Print summary
-            if verbose:
+            # Preview in verbose mode
+            if verbose and result.report:
                 click.echo()
-                click.echo(click.style("Report Preview:", bold=True))
-                preview = result.report[:500] + "..." if len(result.report) > 500 else result.report
+                preview = result.report[:300] + "..." if len(result.report) > 300 else result.report
+                click.echo(click.style("Preview:", dim=True))
                 click.echo(preview)
-
-            # Hint about next steps
-            click.echo()
-            click.echo(click.style("Output files:", dim=True))
-            click.echo(click.style(f"  Report: {output_path / 'research' / 'research_report.md'}", dim=True))
-            click.echo(click.style(f"  Metadata: {output_path / 'research' / 'research_metadata.json'}", dim=True))
         else:
             click.echo()
-            click.echo(click.style(f"Research failed: {result.error}", fg="red"), err=True)
+            click.echo(click.style(f"✗ Research failed: {result.error}", fg="red"), err=True)
             sys.exit(1)
 
     asyncio.run(run())

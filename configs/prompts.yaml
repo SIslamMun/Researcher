@@ -1,0 +1,229 @@
+# Prompts Configuration for Researcher
+# All prompts used by the Deep Research Agent
+
+# Default output format instructions for research reports
+# This defines how the agent should structure citations and references
+default_output_format: |
+  ## Output Format Requirements
+
+  ### Citation Style in Report Body
+  Use numbered references [1], [2], [3], etc. in sequential order. Each number must correspond to exactly one entry in the References section below.
+
+  ### References Section Format
+  At the end of the report, include a "## References" section with all sources organized by type.
+
+  **CRITICAL PARSING RULES:**
+  1. Use **sequential global numbering** starting from 1 (not category-based)
+  2. Use **absolute URLs only** (starting with http:// or https://)
+  3. If a field is unavailable, use `N/A` (not empty)
+  4. Escape pipe characters in text with `\|`
+  5. Use consistent identifier prefixes: `DOI:` for DOIs, `arXiv:` for arXiv IDs
+
+  ---
+
+  #### Published Papers (Peer-Reviewed Journals & Conferences)
+  Include papers from peer-reviewed venues (Nature, Science, NeurIPS, ICML, ACL, EMNLP, CVPR, ICLR, etc.)
+
+  **Table format:**
+  ```
+  | Ref | Title | Authors | Year | Venue | DOI | URL |
+  |-----|-------|---------|------|-------|-----|-----|
+  | 1 | Full Paper Title | First Author et al. | 2024 | Nature | DOI:10.1038/s41586-020-2649-2 | https://doi.org/10.1038/s41586-020-2649-2 |
+  ```
+
+  **Required fields:** Ref, Title, Authors, Year, Venue
+  **Optional fields:** DOI (use N/A if unavailable), URL (use N/A if unavailable)
+
+  ---
+
+  #### Preprints & Working Papers
+  Include papers from arXiv, bioRxiv, SSRN, medRxiv, etc.
+
+  **Table format:**
+  ```
+  | Ref | Title | Authors | Year | Source | Identifier | URL |
+  |-----|-------|---------|------|--------|------------|-----|
+  | 2 | Full Paper Title | First Author et al. | 2024 | arXiv | arXiv:1706.03762 | https://arxiv.org/abs/1706.03762 |
+  ```
+
+  **Required fields:** Ref, Title, Authors, Year, Source, Identifier
+  **Optional fields:** URL
+
+  ---
+
+  #### Code Repositories
+  Include GitHub, GitLab, Bitbucket, etc.
+
+  **Table format:**
+  ```
+  | Ref | Name | URL | Description | Stars |
+  |-----|------|-----|-------------|-------|
+  | 3 | langchain | https://github.com/langchain-ai/langchain | LLM application framework | 50k+ |
+  ```
+
+  **Required fields:** Ref, Name, URL, Description
+  **Optional fields:** Stars (use N/A if unavailable)
+
+  ---
+
+  #### Datasets
+  Include public datasets from any source.
+
+  **Table format:**
+  ```
+  | Ref | Name | Source | Format | URL |
+  |-----|------|--------|--------|-----|
+  | 4 | MS MARCO | Microsoft/Hugging Face | Parquet | https://huggingface.co/datasets/ms_marco |
+  ```
+
+  **Required fields:** Ref, Name, Source, URL
+  **Optional fields:** Format
+
+  ---
+
+  #### Websites & Documentation
+  Include official docs, blog posts, technical articles.
+
+  **Table format:**
+  ```
+  | Ref | Title | Type | URL | Access Date |
+  |-----|-------|------|-----|-------------|
+  | 5 | Hugging Face Transformers Docs | Documentation | https://huggingface.co/docs/transformers | 2024-12 |
+  ```
+
+  **Required fields:** Ref, Title, URL
+  **Optional fields:** Type (Documentation/Blog/Article), Access Date (YYYY-MM format)
+
+  ---
+
+  #### Videos & Multimedia
+  Include YouTube, Vimeo, conference recordings.
+
+  **Table format:**
+  ```
+  | Ref | Title | Creator/Channel | Platform | Duration | URL |
+  |-----|-------|-----------------|----------|----------|-----|
+  | 6 | Attention Is All You Need Explained | 3Blue1Brown | YouTube | 15:30 | https://youtube.com/watch?v=... |
+  ```
+
+  **Required fields:** Ref, Title, Creator/Channel, URL
+  **Optional fields:** Platform, Duration (MM:SS format)
+
+  ---
+
+  #### Books & Textbooks
+  Include published books, ebooks, technical manuals.
+
+  **Table format:**
+  ```
+  | Ref | Title | Authors | Year | Publisher | ISBN | URL |
+  |-----|-------|---------|------|-----------|------|-----|
+  | 7 | Deep Learning | Goodfellow et al. | 2016 | MIT Press | ISBN:978-0262035613 | https://www.deeplearningbook.org/ |
+  ```
+
+  **Required fields:** Ref, Title, Authors, Year, Publisher
+  **Optional fields:** ISBN, URL
+
+  ---
+
+  ### Example References Section
+
+  ## References
+
+  ### Published Papers
+  | Ref | Title | Authors | Year | Venue | DOI | URL |
+  |-----|-------|---------|------|-------|-----|-----|
+  | 1 | Array programming with NumPy | Harris et al. | 2020 | Nature | DOI:10.1038/s41586-020-2649-2 | https://doi.org/10.1038/s41586-020-2649-2 |
+  | 2 | Deep Residual Learning for Image Recognition | He et al. | 2016 | CVPR | DOI:10.1109/CVPR.2016.90 | https://doi.org/10.1109/CVPR.2016.90 |
+
+  ### Preprints
+  | Ref | Title | Authors | Year | Source | Identifier | URL |
+  |-----|-------|---------|------|--------|------------|-----|
+  | 3 | Attention Is All You Need | Vaswani et al. | 2017 | arXiv | arXiv:1706.03762 | https://arxiv.org/abs/1706.03762 |
+  | 4 | GPT-4 Technical Report | OpenAI | 2023 | arXiv | arXiv:2303.08774 | https://arxiv.org/abs/2303.08774 |
+
+  ### Code Repositories
+  | Ref | Name | URL | Description | Stars |
+  |-----|------|-----|-------------|-------|
+  | 5 | pytorch | https://github.com/pytorch/pytorch | Deep learning framework | 70k+ |
+  | 6 | langchain | https://github.com/langchain-ai/langchain | LLM application framework | 80k+ |
+
+  ### Datasets
+  | Ref | Name | Source | Format | URL |
+  |-----|------|--------|--------|-----|
+  | 7 | MS MARCO | Microsoft | Parquet | https://huggingface.co/datasets/ms_marco |
+
+  ### Websites & Documentation
+  | Ref | Title | Type | URL | Access Date |
+  |-----|-------|------|-----|-------------|
+  | 8 | Hugging Face Docs | Documentation | https://huggingface.co/docs | 2024-12 |
+
+  ### Videos & Multimedia
+  | Ref | Title | Creator/Channel | Platform | Duration | URL |
+  |-----|-------|-----------------|----------|----------|-----|
+  | 9 | Neural Networks Explained | 3Blue1Brown | YouTube | 19:13 | https://youtube.com/watch?v=aircAruvnKk |
+
+  ---
+
+  ### METADATA BLOCK (For Programmatic Parsing)
+  **At the very end of the References section, include a YAML metadata block:**
+
+  ```yaml
+  # CITATION_METADATA
+  references:
+    - ref: 1
+      type: published_paper
+      doi: "10.1038/s41586-020-2649-2"
+      title: "Array programming with NumPy"
+    - ref: 2
+      type: published_paper
+      doi: "10.1109/CVPR.2016.90"
+      title: "Deep Residual Learning for Image Recognition"
+    - ref: 3
+      type: preprint
+      arxiv: "1706.03762"
+      title: "Attention Is All You Need"
+    - ref: 4
+      type: preprint
+      arxiv: "2303.08774"
+      title: "GPT-4 Technical Report"
+    - ref: 5
+      type: code_repository
+      github: "pytorch/pytorch"
+      url: "https://github.com/pytorch/pytorch"
+    - ref: 6
+      type: code_repository
+      github: "langchain-ai/langchain"
+      url: "https://github.com/langchain-ai/langchain"
+    - ref: 7
+      type: dataset
+      url: "https://huggingface.co/datasets/ms_marco"
+    - ref: 8
+      type: website
+      url: "https://huggingface.co/docs"
+    - ref: 9
+      type: video
+      youtube: "aircAruvnKk"
+      url: "https://youtube.com/watch?v=aircAruvnKk"
+  ```
+
+# Follow-up question system prompt
+# Used when asking follow-up questions about completed research
+follow_up_system_prompt: |
+  You are a research assistant helping to clarify and expand on previous research.
+
+  Guidelines for follow-up responses:
+  - Provide detailed, well-cited answers based on the context of the original research
+  - Maintain the same citation format and numbering scheme as the original report
+  - Add new references if introducing new sources (continue numbering from previous report)
+  - Be concise but thorough
+  - If the question requires information beyond the original research scope, clearly indicate this
+  - Reference specific sections or findings from the original research when relevant
+
+# Additional prompts can be added here as needed
+# Example:
+# system_prompt: |
+#   You are a helpful research assistant...
+#
+# analysis_prompt: |
+#   Analyze the following research findings...

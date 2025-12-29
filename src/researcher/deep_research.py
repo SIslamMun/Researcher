@@ -12,6 +12,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 
 class ResearchStatus(Enum):
     """Status of a research task."""
@@ -22,27 +24,54 @@ class ResearchStatus(Enum):
     CANCELLED = "cancelled"
 
 
-# Default output format that requests structured references
-DEFAULT_OUTPUT_FORMAT = """
-## Output Format Requirements
+def _load_prompts_config(config_path: Path | None = None) -> dict:
+    """Load prompts configuration from YAML file.
 
-For all resources mentioned, include identifiers for programmatic retrieval:
+    Args:
+        config_path: Path to prompts config file. If None, searches default locations.
 
-1. **Academic Papers**: Include arXiv ID (e.g., arXiv:2005.11401) or DOI (e.g., 10.1038/nature12373)
-2. **GitHub Repositories**: Include full URLs (e.g., https://github.com/owner/repo)
-3. **YouTube Videos**: Include full URLs (e.g., https://youtube.com/watch?v=...)
-4. **Websites/Documentation**: Include full URLs
-5. **Archives/Datasets**: Include URLs or identifiers (Hugging Face, Kaggle, etc.)
-6. **Books**: Include ISBN when available
-7. **Blog Posts/Articles**: Include full URLs
+    Returns:
+        Dictionary containing prompts configuration
+    """
+    # Default search paths
+    search_paths = [
+        Path(__file__).parent.parent.parent / "configs" / "prompts.yaml",
+        Path("./configs/prompts.yaml"),
+        Path.home() / ".config" / "researcher" / "prompts.yaml",
+    ]
 
-At the end of the report, include a "## References" section with all sources organized by type:
-- Papers (with arXiv IDs or DOIs)
-- Code Repositories (GitHub, GitLab URLs)
-- Websites & Documentation (URLs)
-- Videos (YouTube URLs)
-- Other Resources
-"""
+    if config_path:
+        search_paths.insert(0, Path(config_path))
+
+    for path in search_paths:
+        if path.exists():
+            try:
+                with open(path) as f:
+                    return yaml.safe_load(f) or {}
+            except Exception as e:
+                # Continue to next path if loading fails
+                continue
+
+    # Return empty dict if no config found - will use fallback
+    return {}
+
+
+def _get_default_output_format() -> str:
+    """Get the default output format for research reports.
+
+    Loads from prompts.yaml config file. If not found, returns a minimal fallback.
+
+    Returns:
+        Output format instructions string
+    """
+    prompts_config = _load_prompts_config()
+
+    # Get from config or use minimal fallback
+    # Note: Full prompt should be in configs/prompts.yaml
+    return prompts_config.get("default_output_format",
+        "Please include a References section with citations organized by type "
+        "(Papers, Code, Datasets, etc.) with proper identifiers (DOI, arXiv, URLs)."
+    )
 
 
 @dataclass
@@ -199,7 +228,7 @@ class DeepResearcher:
 
         # Add identifier format requirements
         if self.config.include_identifiers:
-            prompt += f"\n\n{DEFAULT_OUTPUT_FORMAT}"
+            prompt += f"\n\n{_get_default_output_format()}"
 
         return prompt
 
@@ -563,10 +592,19 @@ class DeepResearcher:
         client = self._get_client()
         loop = asyncio.get_event_loop()
 
+        # Build follow-up prompt with system instructions
+        prompts_config = _load_prompts_config()
+        follow_up_prompt = prompts_config.get("follow_up_system_prompt", "")
+
+        # Combine system prompt with user question
+        full_prompt = question
+        if follow_up_prompt:
+            full_prompt = f"{follow_up_prompt}\n\n---\n\nQuestion: {question}"
+
         interaction = await loop.run_in_executor(
             None,
             lambda: client.interactions.create(
-                input=question,
+                input=full_prompt,
                 model="gemini-3-pro-preview",
                 previous_interaction_id=interaction_id
             )
