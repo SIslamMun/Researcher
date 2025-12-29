@@ -30,6 +30,19 @@ export GOOGLE_API_KEY="your-google-api-key"
 researcher research "What are the latest advances in quantum computing?"
 ```
 
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `researcher research "<query>"` | Conduct deep research on a topic |
+| `researcher research "<query>" -o ./output` | Specify output directory |
+| `researcher research "<query>" -v` | Verbose mode with thinking steps |
+| `researcher research "<query>" --format "..."` | Custom output format instructions |
+| `researcher research "<query>" --no-stream` | Use polling instead of streaming |
+| `researcher research "<query>" --max-wait 7200` | Set max wait time (seconds) |
+| `researcher --help` | Show help |
+| `researcher --version` | Show version |
+
 ## Installation
 
 ```bash
