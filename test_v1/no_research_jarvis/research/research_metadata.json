@@ -1,0 +1,8 @@
+{
+  "query": "Analyze the Jarvis framework for HPC deployment and container orchestration. Explain its architecture, key components, and how it integrates with different runtime environments.",
+  "status": "completed",
+  "interaction_id": "v1_ChdsUDVUYVlUVkpPcXVfdU1QbTdfTzBBNBIXbFA1VGFZVFZKT3F1X3VNUG03X08wQTQ",
+  "citations": [],
+  "duration_seconds": 355.145432472229,
+  "error": null
+}
