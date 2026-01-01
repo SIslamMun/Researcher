@@ -39,7 +39,7 @@ def load_config(config_path: Path | None = None) -> dict:
 def cli():
     """Researcher CLI - AI-powered deep research using Gemini.
 
-    API key: Set via --api-key, GOOGLE_API_KEY env var, or configs/research.yaml
+    API key: Set via --api-key, GEMINI_API_KEY/GOOGLE_API_KEY env var, or configs/research.yaml
     Prompts: Customize in configs/prompts.yaml (citation format, follow-up instructions)
     """
     pass
@@ -85,12 +85,18 @@ def research(query: str, output: str, output_format: str | None,
     # Load config file
     config_data = load_config(Path(config_path) if config_path else None)
     
-    # Resolve API key: CLI > env > config file
-    resolved_api_key = api_key or os.environ.get("GOOGLE_API_KEY") or config_data.get("api_key")
+    # Resolve API key: CLI > env (GEMINI_API_KEY preferred) > config file
+    # Note: google-genai SDK checks GEMINI_API_KEY first, then GOOGLE_API_KEY
+    resolved_api_key = (
+        api_key 
+        or os.environ.get("GEMINI_API_KEY") 
+        or os.environ.get("GOOGLE_API_KEY") 
+        or config_data.get("api_key")
+    )
     
     if not resolved_api_key:
         click.echo(click.style("Error: No API key found", fg="red"), err=True)
-        click.echo("Set via: --api-key, GOOGLE_API_KEY env, or configs/research.yaml", err=True)
+        click.echo("Set via: --api-key, GEMINI_API_KEY/GOOGLE_API_KEY env, or configs/research.yaml", err=True)
         click.echo("Get key from: https://aistudio.google.com/", err=True)
         sys.exit(1)
 

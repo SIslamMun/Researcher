@@ -5,6 +5,7 @@ for autonomous multi-step research tasks.
 """
 
 import asyncio
+import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -13,6 +14,47 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
+
+def _post_process_report(report: str) -> str:
+    """Post-process the research report to fix citation format.
+
+    Gemini Deep Research API outputs citations in [cite: N] format.
+    This function converts them to standard [N] format and removes
+    the redundant Sources section (References already has proper URLs).
+
+    Args:
+        report: Raw report from Gemini
+
+    Returns:
+        Cleaned report with proper citation format
+    """
+    if not report:
+        return report
+
+    # 1. Convert [cite: N] to [N] for single citations
+    # Matches: [cite: 1], [cite: 23], etc.
+    report = re.sub(r'\[cite:\s*(\d+)\]', r'[\1]', report)
+
+    # 2. Convert [cite: N, M, ...] to [N, M, ...] for multiple citations
+    # Matches: [cite: 1, 2], [cite: 1, 2, 3], etc.
+    report = re.sub(r'\[cite:\s*([\d,\s]+)\]', r'[\1]', report)
+
+    # 3. Remove the redundant "**Sources:**" section at the end
+    # This section has Google redirect URLs which are useless
+    # The References section above it already has proper URLs
+    # Pattern matches: **Sources:** followed by numbered list with redirect URLs
+    sources_pattern = r'\n\*\*Sources:\*\*\n(?:[\d]+\.\s*\[[^\]]+\]\([^\)]+\)\s*\n?)+'
+    report = re.sub(sources_pattern, '\n', report, flags=re.DOTALL)
+
+    # 4. Also handle "Sources:" without bold
+    sources_pattern_alt = r'\nSources:\n(?:[\d]+\.\s*\[[^\]]+\]\([^\)]+\)\s*\n?)+'
+    report = re.sub(sources_pattern_alt, '\n', report, flags=re.DOTALL)
+
+    # 5. Clean up multiple consecutive blank lines
+    report = re.sub(r'\n{3,}', '\n\n', report)
+
+    return report.strip()
 
 
 class ResearchStatus(Enum):
@@ -318,6 +360,9 @@ class DeepResearcher:
                 report_text = result["report"]
                 interaction_id = result["interaction_id"]
                 citations = result.get("citations", [])
+
+            # Post-process report to fix citation format
+            report_text = _post_process_report(report_text)
 
             duration = time.time() - start_time
 

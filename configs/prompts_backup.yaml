@@ -1,68 +1,60 @@
-# Prompts Configuration for Researcher
-# All prompts used by the Deep Research Agent
 
-# Default output format instructions for research reports
-# This defines how the agent should structure citations and references
+
+# Prompts Configuration for Researcher (V2 - Refined)
+
 default_output_format: |
-  ## Citation Requirements
+  ## ⚠️ CRITICAL: Citation Format
 
-  **IMPORTANT:** Use numbered citations [1], [2], [3] throughout the report body. Every claim should be supported by at least one citation.
+  **USE [1], [2], [3] - NEVER [cite: 1] FORMAT**
 
-  At the end of your report, include a comprehensive "## References" section with all sources organized by category and numbered sequentially.
+  Throughout your ENTIRE report:
+  - ✅ CORRECT: "Transformers revolutionized NLP [1, 2]."
+  - ❌ WRONG: "Recent work [cite: 1, 2] shows..."
+  - ❌ WRONG: "[cite: 1]" in References section
+
+  This applies to BOTH in-text citations AND the References section itself.
+  At the end of your report, include a comprehensive "## References" section with sources organized by category.
 
   ---
 
   ## Reference Format by Category
 
   ### Publications
-  This category includes ALL written research outputs, ordered by credibility:
-  - Peer-reviewed journal articles (Nature, Science, Cell, etc.)
+  ALL written research outputs, ordered by credibility:
+  - Peer-reviewed journals (Nature, Science, Cell, etc.)
   - Conference papers (NeurIPS, ICML, CVPR, ACL, etc.)
-  - arXiv preprints and other preprint servers (bioRxiv, SSRN, etc.)
+  - arXiv preprints and preprint servers (bioRxiv, SSRN, etc.)
   - Blog posts and technical articles
 
   **Format:**
   ```
-  [1] "Title" (Author(s)). Venue/Source, Year. DOI: xxx (if available) | URL
+  [1] "Title" (Author(s)). Venue/Source, Year. DOI: xxx | URL
   ```
 
-  **IMPORTANT:**
-  - Put author names in parentheses immediately after the title
-  - Always include the full DOI when available (e.g., DOI: 10.1038/s41586-020-2649-2)
-  - For arXiv papers, include the arXiv ID in the venue (e.g., "arXiv:2303.08774")
-  - Use "et al." for papers with 3+ authors
-  - Include URLs for all publications
+  **Rules:**
+  - Use [N] NOT [cite: N]
+  - Author names in parentheses, use "et al." for 3+ authors
+  - **ALWAYS include full DOI when available** (e.g., DOI: 10.1038/s41586-020-2649-2)
+  - For arXiv: include arXiv ID in venue (e.g., "arXiv:2303.08774")
+  - Use direct URLs, NO Google redirect URLs
+  - NO separate "Sources:" section
 
   ### Code & Tools
-  GitHub repositories, software packages, frameworks, and development tools.
-
-  **Format:**
   ```
-  [N] Repository/Package Name - Brief description of what it does. URL
+  [N] Repository/Package Name - Brief description. URL
   ```
-
-  **IMPORTANT:** Focus on official repositories. Include a concise 1-sentence description.
 
   ### Datasets
-  Training datasets, benchmarks, evaluation sets, and data collections.
-
-  **Format:**
   ```
   [N] Dataset Name. Provider/Source. Brief description. URL
   ```
 
   ### Documentation & Websites
-  Official documentation, tutorials, technical guides, and web resources.
-
-  **Format:**
   ```
   [N] "Page/Section Title." Website/Source. URL
   ```
 
   ### Books & Textbooks
-  Published books, ebooks, and educational materials.
-
-  **Format:**
   ```
   [N] Title (Author(s)). Publisher, Year. ISBN: xxx (if available)
   ```
@@ -71,108 +63,69 @@ default_output_format: |
 
   ## Example References Section
 
+  ```markdown
   ## References
 
   ### Publications
-  [1] "Array programming with NumPy" (Harris et al.). Nature, 2020. DOI: 10.1038/s41586-020-2649-2 | https://doi.org/10.1038/s41586-020-2649-2
-  [2] "Attention Is All You Need" (Vaswani et al.). NeurIPS, 2017. https://papers.nips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html
-  [3] "GPT-4 Technical Report" (OpenAI). arXiv:2303.08774, 2023. https://arxiv.org/abs/2303.08774
-  [4] "What are Diffusion Models?" (Lilian Weng). Lil'Log (blog), 2021. https://lilianweng.github.io/posts/2021-07-11-diffusion-models/
+  [1] "Attention Is All You Need" (Vaswani et al.). NeurIPS, 2017. https://papers.nips.cc/paper/2017/...
+  [2] "BERT: Pre-training of Deep Bidirectional Transformers" (Devlin et al.). arXiv:1810.04805, 2018. https://arxiv.org/abs/1810.04805
 
   ### Code & Tools
-  [5] pytorch - Deep learning framework with dynamic computational graphs and GPU acceleration. https://github.com/pytorch/pytorch
-  [6] langchain - Framework for developing applications powered by language models. https://github.com/langchain-ai/langchain
-
-  ### Datasets
-  [7] MS MARCO. Microsoft. Large-scale information retrieval dataset with real Bing queries. https://microsoft.github.io/msmarco/
+  [3] pytorch - Deep learning framework with GPU acceleration. https://github.com/pytorch/pytorch
 
   ### Documentation & Websites
-  [8] "Transformers Documentation." Hugging Face. https://huggingface.co/docs/transformers
+  [4] "Transformers Documentation." Hugging Face. https://huggingface.co/docs/transformers
+  ```
 
-# Follow-up question system prompt
-# Used when asking follow-up questions about completed research
+  ---
+
+  **REMEMBER:** Use [1], [2], [3] format throughout. Number sequentially across all categories. NO [cite: N] format. NO "Sources:" section.
+
 follow_up_system_prompt: |
   You are a research assistant helping to clarify and expand on previous research.
 
-  **IMPORTANT Guidelines:**
+  **Guidelines:**
   - Provide detailed, well-cited answers based on the original research context
-  - **IMPORTANT:** Maintain the same citation format and numbering scheme as the original report
-  - Add new references if introducing new sources (continue numbering from previous report)
-  - Be concise but thorough
-  - If the question requires information beyond the original scope, clearly state this
   - Reference specific sections or findings from the original research when relevant
+  - Add new references if introducing new sources (continue numbering from previous report)
+  - If the question requires information beyond the original scope, clearly state this
+  - Be concise but thorough
 
-# Research mode instructions
-# These define how the agent should approach research based on available materials
+  **CRITICAL:** Use [1], [2], [3] citation format. NEVER use [cite: N] format.
 
 research_mode_undirected: |
   ## Research Mode: UNDIRECTED (Web-First Discovery)
 
-  You are conducting autonomous web-first research using only the user's prompt.
+  Conduct autonomous web-first research using the user's prompt.
+  - Search extensively for relevant, authoritative sources
+  - Prioritize recent, peer-reviewed publications
+  - Gather diverse perspectives and developments
 
-  **IMPORTANT:** This mode relies entirely on web search and browsing.
-
-  **Approach:**
-  - Search the web extensively for relevant information
-  - Browse multiple authoritative sources
-  - Gather diverse perspectives and recent developments
-  - Synthesize findings into a comprehensive report
-  - **IMPORTANT:** Prioritize recent, peer-reviewed, and authoritative sources
-
-  **Goal:** Comprehensive discovery without prior materials.
+  **CRITICAL:** Use [1], [2], [3] citations. NEVER [cite: N] format.
 
 research_mode_directed: |
   ## Research Mode: DIRECTED (Guided by User Materials)
 
-  The user has provided supporting materials (papers, links, repos, docs) for this research.
+  User has provided supporting materials for this research.
+  - PRIORITIZE the user-provided materials as PRIMARY sources
+  - Use web search ONLY to fill critical gaps
+  - Clearly distinguish between provided materials vs. web sources
 
-  **IMPORTANT:** PRIORITIZE analyzing and citing the user-provided materials.
+  **CRITICAL:** Use [1], [2], [3] citations. NEVER [cite: N] format.
 
-  **Approach:**
-  - **IMPORTANT:** Use the provided materials as your PRIMARY sources
-  - Use web search ONLY to:
-    * Fill critical gaps in the provided materials
-    * Verify claims or find counterpoints
-    * Add essential recent context or developments
-  - Clearly distinguish between insights from provided materials vs. web sources
-  - Build your analysis primarily on the user's materials
-
-  **User-provided materials:**
+  User-provided materials:
   {artifacts}
 
 research_mode_no_research: |
-  ## Research Mode: NO-RESEARCH (Analysis Only)
+  ## Research Mode: ANALYSIS ONLY
 
-  The user has provided all necessary materials.
+  Analyze ONLY the user-provided materials below.
+  - MAY fetch and read provided URLs (arXiv, GitHub, docs)
+  - Extract key concepts and synthesize insights
+  - Compare and contrast across materials
+  - Do NOT search for external sources
 
-  **IMPORTANT:** DO NOT perform web searches for additional sources.
+  **CRITICAL:** Use [1], [2], [3] citations. NEVER [cite: N] format.
 
-  **Approach:**
-  - You MAY fetch and read the provided URLs (arXiv papers, GitHub repos, documentation links, etc.)
-  - Deeply analyze ONLY the content from the provided materials
-  - Compare and contrast the different provided sources
-  - Synthesize insights across the materials
-  - Identify patterns, gaps, and contradictions
-  - **IMPORTANT:** Do NOT search for or cite external sources beyond what was provided
-  - Focus on critical analysis and synthesis of the given materials
-
-  **What you CAN do:**
-  - Fetch content from provided URLs (arXiv, GitHub, docs, etc.)
-  - Read and analyze the fetched content
-  - Cross-reference between provided materials
-
-  **What you CANNOT do:**
-  - Perform web searches for additional sources
-  - Cite sources not provided by the user
-  - Browse beyond the provided URLs
-
-  **Provided materials:**
+  Provided materials:
   {artifacts}
-
-# Additional prompts can be added here as needed
-# Example:
-# system_prompt: |
-#   You are a helpful research assistant...
-#
-# analysis_prompt: |
-#   Analyze the following research findings...
